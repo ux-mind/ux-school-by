@@ -297,324 +297,249 @@ tpl:'<div class="fancybox-share"><h1>{{SHARE}}</h1><p><a class="fancybox-share__
 'use strict';
 
 // Скидка 10%
-const SCHOOL_SALE_VALUE = 0.1;
+const SCHOOL_SALE_VALUE = .1;
 // Промокод
 const PROMOCODE_SALE_VALUE = 50;
 
-(function() {
-	const utilsModule = window.utils;
+(function () {
+    const utilsModule = window.utils;
 
-	class Payment {
-		_totalPrice;
-		_price;
-		_current;
-		_dropdownType;
-		_salePrice;
-		_saleType;
-		_saleValue;
+    class Payment {
+        _totalPrice;
+        _price;
+        _current;
+        _dropdownType;
+        _salePrice;
+        _saleType;
+        _saleValue;
 
-		constructor() {
-			this.setTotalPrice(0);
-			this.setPrice(0);
-			this.setSalePrice(0);
-			this.setSaleValue(0);
-			this.setSaleType(`Без скидки`);
-		}
+        constructor() {
+            this.setTotalPrice(0);
+            this.setPrice(0);
+            this.setSalePrice(0);
+            this.setSaleValue(0);
+            this.setSaleType(`Без скидки`);
+        }
 
-		getTotalPrice() {
-			return this._totalPrice;
-		}
-		setTotalPrice(value) {
-			this._totalPrice = value;
-		}
-		getPrice() {
-			return this._price;
-		}
-		setPrice(value) {
-			this._price = value;
-		}
-		getCurrent() {
-			return this._current;
-		}
-		setCurrent(value) {
-			this._current = value;
-		}
-		getDropdownType() {
-			return this._dropdownType;
-		}
-		setDropdownType(value) {
-			this._dropdownType = value;
-		}
-		getSalePrice() {
-			return this._salePrice;
-		}
-		setSalePrice(value) {
-			this._salePrice = value;
-		}
-		getSaleType() {
-			return this._saleType;
-		}
-		setSaleType(value) {
-			this._saleType = value;
-		}
-		getSaleValue() {
-			return this._saleValue;
-		}
-		setSaleValue(value) {
-			this._saleValue = value;
-		}
-		updatePrices(index, isSale = false) {
-			const data = window.paymentSelect.instance.getCourseData();
-			// if (index === 3) {
-			//     this.setTotalPrice(data.fullPrice);
-			//     return;
-			// }
-			if (isSale) {
-				this.setTotalPrice((this.getSalePrice() / 3 - this.getSalePrice() / 3 * SCHOOL_SALE_VALUE).toFixed(2));
-				this.setSaleType(`Я студент-очник / я раньше уже учился у вас`);
-				this.setSaleValue(10);
-			} else {
-				this.setTotalPrice(data.salePrice);
-			}
-		}
-		changeInputPrice(index, isSale = false, promocode = {}) {
-			switch (index) {
-				case 5:
-				case 4:
-				case 0:
-					if (isSale) {
-						const selectCourseElement = document.querySelector(`.ums-select`);
-						if (selectCourseElement.dataset.installment === `true`) {
-							this.setTotalPrice(
-								(this.getSalePrice() / 3 - this.getSalePrice() / 3 * SCHOOL_SALE_VALUE).toFixed(2)
-							);
-						} else {
-							this.setTotalPrice(this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE);
-						}
-						this.setSaleType(`Я студент-очник / я раньше уже учился у вас`);
-						this.setSaleValue(10);
-					} else if (Object.values(promocode).length) {
-						if (window.paymentSelect.instance.getPaymentType() === 'payment') {
-							this.setTotalPrice(+this.getSalePrice() - +promocode.value);
-							this.setSaleType(`${promocode.name}`);
-							this.setSaleValue(`${promocode.value}`);
-						} else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
-							this.setTotalPrice(+this.getPrice() - +promocode.value);
-							this.setSaleType(`${promocode.name}`);
-							this.setSaleValue(`${promocode.value}`);
-						}
-					} else {
-						const selectCourseElement = document.querySelector(`.ums-select`);
-						if (selectCourseElement.dataset.installment === `true`) {
-							if (isSale) {
-								this.setTotalPrice(
-									(this.getSalePrice() / 3 - this.getSalePrice() / 3 * SCHOOL_SALE_VALUE).toFixed(2)
-								);
-								this.setSaleType(`Я студент-очник / я раньше уже учился у вас`);
-								this.setSaleValue(10);
-							} else {
-								this.setTotalPrice((this.getSalePrice() / 3).toFixed(2));
-								this.setSaleType(`Нет скидки`);
-								this.setSaleValue(0);
-							}
-						} else if (window.paymentSelect.instance.getPaymentType() === 'payment') {
-							this.setTotalPrice(this.getSalePrice());
-							this.setSaleType(`Нет скидки`);
-							this.setSaleValue(0);
-						} else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
-							this.setTotalPrice(this.getPrice());
-							this.setSaleType(`Нет скидки`);
-							this.setSaleValue(0);
-						}
-					}
-					break;
-				// case 1:
-				//     if (isSale) {
-				//         this.setTotalPrice(Math.round(this.getSalePrice() / 2 - this.getSalePrice() / 2 * .1));
-				//         this.setSaleType(`Я студент-очник / я раньше уже учился у вас`);
-				//         this.setSaleValue(10);
-				//     } else {
-				//         this.setTotalPrice(this.getSalePrice() / 2);
-				//         this.setSaleType(`Нет скидки`);
-				//         this.setSaleValue(0);
-				//     }
-				//     break;
-				case 3:
-				case 1:
-					this.setTotalPrice(this.getSalePrice());
-					break;
-			}
-			this.changeCurenciesPrice(index);
-			if (window.paymentSelect.instance.getPaymentType() === 'payment') {
-				const paymentSectionCollection = document.querySelectorAll(`.payment-section`);
-				if (paymentSectionCollection.length > 1) {
-					let totalInputElementName = 'input[name="wsb_total"]';
-					jQuery('.payment-section').eq(index).find(totalInputElementName).val(this.getTotalPrice());
-					jQuery('.payment-section')
-						.eq(index)
-						.find(totalInputElementName)
-						.next()
-						.addClass('form__label_active')
-						.parent()
-						.addClass('form__input_filled');
-					}
-				else {
-					const htmlTotalPriceElement = document.querySelector(`.erip-payment__price-value`);
-					let totalInputElementName = 'input[name="total"]';
-					document.querySelector(totalInputElementName).value = this.getTotalPrice();
-					htmlTotalPriceElement.textContent = `${this.getTotalPrice()} BYN`;
-					jQuery('.payment-section')
-						.find(totalInputElementName)
-						.next()
-						.addClass('form__label_active')
-						.parent()
-						.addClass('form__input_filled');
-				}
-			} else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
-				let totalInputElement = document.querySelector('input[name="total"]');
-				totalInputElement.value = this.getTotalPrice();
-				totalInputElement.nextElementSibling.classList.add('form__label_active');
-				totalInputElement.parentElement.classList.add('form__input_filled');
-			}
-		}
-		changeCurenciesPrice(index) {
-			let totalPriceInUsd = (this.getTotalPrice() / parseFloat(rates['usd'])).toFixed(0);
-			let totalPriceInRub = (this.getTotalPrice() / (parseFloat(rates['rub']) / 100)).toFixed(0);
-			let currenciesPriceTemplate = `
+        getTotalPrice() {
+            return this._totalPrice;
+        }
+        setTotalPrice(value) {
+            this._totalPrice = value;
+        }
+        getPrice() {
+            return this._price;
+        }
+        setPrice(value) {
+            this._price = value;
+        }
+        getCurrent() {
+            return this._current;
+        }
+        setCurrent(value) {
+            this._current = value;
+        }
+        getDropdownType() {
+            return this._dropdownType;
+        }
+        setDropdownType(value) {
+            this._dropdownType = value;
+        }
+        getSalePrice() {
+            return this._salePrice;
+        }
+        setSalePrice(value) {
+            this._salePrice = value;
+        }
+        getSaleType() {
+            return this._saleType;
+        }
+        setSaleType(value) {
+            this._saleType = value;
+        }
+        getSaleValue() {
+            return this._saleValue;
+        }
+        setSaleValue(value) {
+            this._saleValue = value;
+        }
+        updatePrices(index, isSale = false) {
+            const data = window.paymentSelect.instance.getCourseData();
+            // if (index === 3) {
+            //     this.setTotalPrice(data.fullPrice);
+            //     return;
+            // }
+            if (isSale) {
+                console.log(`we are here`);
+                this.setTotalPrice(((this.getSalePrice() / 3) - (this.getSalePrice() / 3 * SCHOOL_SALE_VALUE)).toFixed(2));
+                this.setSaleType(`Я студент-очник / я раньше уже учился у вас`);
+                this.setSaleValue(10);
+            }
+            else {
+                this.setTotalPrice(data.salePrice);
+            }
+        }
+        changeInputPrice(index, isSale = false, promocode = {}) {
+            switch (index) {
+                case 5:
+                case 4:
+                case 0:
+                    if (isSale) {
+                        const selectCourseElement = document.querySelector(`.ums-select`);
+                        if (selectCourseElement.dataset.installment === `true`) {
+                            this.setTotalPrice(((this.getSalePrice() / 3) - (this.getSalePrice() / 3 * SCHOOL_SALE_VALUE)).toFixed(2));
+                        }
+                        else {
+                            this.setTotalPrice(this.getSalePrice() - (this.getSalePrice() * SCHOOL_SALE_VALUE));
+                        }
+                        this.setSaleType(`Я студент-очник / я раньше уже учился у вас`);
+                        this.setSaleValue(10);
+                    } else if (Object.values(promocode).length) {
+                        if (window.paymentSelect.instance.getPaymentType() === 'payment') {
+                            this.setTotalPrice(+this.getSalePrice() - +promocode.value);
+                            this.setSaleType(`${promocode.name}`);
+                            this.setSaleValue(`${promocode.value}`);
+                        } else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
+                            this.setTotalPrice(+this.getPrice() - +promocode.value);
+                            this.setSaleType(`${promocode.name}`);
+                            this.setSaleValue(`${promocode.value}`);
+                        }
+                    } else {
+                        const selectCourseElement = document.querySelector(`.ums-select`);
+                        if (selectCourseElement.dataset.installment === `true`) {
+                            if (isSale) {
+                                this.setTotalPrice(((this.getSalePrice() / 3) - (this.getSalePrice() / 3 * SCHOOL_SALE_VALUE)).toFixed(2));
+                                this.setSaleType(`Я студент-очник / я раньше уже учился у вас`);
+                                this.setSaleValue(10);
+                            }
+                            else {
+                                this.setTotalPrice((this.getSalePrice() / 3).toFixed(2));
+                                this.setSaleType(`Нет скидки`);
+                                this.setSaleValue(0);
+                            }
+                        }
+                        else if (window.paymentSelect.instance.getPaymentType() === 'payment') {
+                            this.setTotalPrice(this.getSalePrice());
+                            this.setSaleType(`Нет скидки`);
+                            this.setSaleValue(0);
+                        } else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
+                            this.setTotalPrice(this.getPrice());
+                            this.setSaleType(`Нет скидки`);
+                            this.setSaleValue(0);
+                        }
+                    }
+                    break;
+                // case 1:
+                //     if (isSale) {
+                //         this.setTotalPrice(Math.round(this.getSalePrice() / 2 - this.getSalePrice() / 2 * .1));
+                //         this.setSaleType(`Я студент-очник / я раньше уже учился у вас`);
+                //         this.setSaleValue(10);
+                //     } else {
+                //         this.setTotalPrice(this.getSalePrice() / 2);
+                //         this.setSaleType(`Нет скидки`);
+                //         this.setSaleValue(0);
+                //     }
+                //     break;
+                case 3:
+                case 1:
+                    this.setTotalPrice(this.getSalePrice());
+                    break;
+            }
+            this.changeCurenciesPrice(index);
+            if (window.paymentSelect.instance.getPaymentType() === 'payment') {
+                let totalInputElement = jQuery('.payment-section').eq(index).find('input[name="wsb_total"]');
+                let totalInputElementName = totalInputElement.length ? 'input[name="wsb_total"]' : 'input[name="total"]';
+                jQuery('.payment-section').eq(index).find(totalInputElementName).val(this.getTotalPrice());
+                jQuery('.payment-section').eq(index).find(totalInputElementName).next().addClass('form__label_active').parent().addClass('form__input_filled');
+            } else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
+                let totalInputElement = document.querySelector('input[name="total"]');
+                totalInputElement.value = this.getTotalPrice();
+                totalInputElement.nextElementSibling.classList.add('form__label_active');
+                totalInputElement.parentElement.classList.add('form__input_filled');
+            }
+        }
+        changeCurenciesPrice(index) {
+            let totalPriceInUsd = (this.getTotalPrice() / parseFloat(rates['usd'])).toFixed(0);
+            let totalPriceInRub = (this.getTotalPrice() / (parseFloat(rates['rub']) / 100)).toFixed(0);
+            let currenciesPriceTemplate = `
                     <p class="ums-currency__value ums-currency__symbol">BYN</p>
                     <p class="ums-currency__value ums-currency__value_color-gray icon-currency icon-dollar_color-gray">&nbsp;≈&nbsp;${totalPriceInUsd}</p>
                     <p class="ums-currency__value ums-currency__value_color-gray icon-currency icon-ruble_color-gray">&nbsp;≈&nbsp;${totalPriceInRub}</p>`;
-			if (window.paymentSelect.instance.getPaymentType() === 'payment') {
-				const container = document.querySelectorAll('.payment-section');
-				const input = container[index].querySelector('.ums-currency');
-				if (input) {
-					input.innerHTML = '';
-					input.insertAdjacentHTML('afterBegin', currenciesPriceTemplate);
-				}
-			} else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
-				const input = document.querySelector('.ums-currency');
-				if (input) {
-					input.innerHTML = '';
-					input.insertAdjacentHTML('afterBegin', currenciesPriceTemplate);
-				}
-			}
-		}
-		updateEripPrice(isPromocode = {}, isSale = false, isInstallment = false) {
-			let eripPaymentPriceElement = document.querySelector(`.erip-payment__price-value`);
+            if (window.paymentSelect.instance.getPaymentType() === 'payment') {
+                const container = document.querySelectorAll('.payment-section');
+                const input = container[index].querySelector('.ums-currency');
+                if (input) {
+                    input.innerHTML = '';
+                    input.insertAdjacentHTML('afterBegin', currenciesPriceTemplate);
+                }
+            } else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
+                const input = document.querySelector('.ums-currency');
+                if (input) {
+                    input.innerHTML = '';
+                    input.insertAdjacentHTML('afterBegin', currenciesPriceTemplate);
+                }
+            }
+        }
+        updateEripPrice(isPromocode = {}, isSale = false, isInstallment = false) {
+            const eripPaymentPriceElement = document.querySelector(`.erip-payment__price-value`);
 
-			if (eripPaymentPriceElement) {
-				const eripPaymentTotalInputElement = eripPaymentPriceElement.closest(`.erip-payment`).querySelector(`input[name="total"]`);
-				let eripPaymentPriceValue = `${this.getSalePrice()} BYN`;
-				if (eripPaymentTotalInputElement) {
-					eripPaymentTotalInputElement.value = +this.getSalePrice();
-					this.setTotalPrice(+this.getSalePrice());
-				}
-				if (Object.values(isPromocode).length && isInstallment) {
-					eripPaymentPriceValue = `${((+this.getSalePrice() - +window.promocodeData.value) / 3).toFixed(
-						2
-					)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
-					if (eripPaymentTotalInputElement) {
-						eripPaymentTotalInputElement.value = ((+this.getSalePrice() - +window.promocodeData.value) / 3).toFixed(2);
-						this.setTotalPrice(((+this.getSalePrice() - +window.promocodeData.value) / 3).toFixed(2));
-					}
-				} else if (isSale && isInstallment) {
-					eripPaymentPriceValue = `${((this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE) /3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
-					if (eripPaymentTotalInputElement) {
-						eripPaymentTotalInputElement.value = ((+this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE) / 3).toFixed(2);
-						this.setTotalPrice(((+this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE) / 3).toFixed(2));
-					}
-				} else if (isInstallment) {
-					eripPaymentPriceValue = `${(this.getSalePrice() / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
-					if (eripPaymentTotalInputElement) {
-						eripPaymentTotalInputElement.value = (+this.getSalePrice() / 3).toFixed(2);
-						this.setTotalPrice((+this.getSalePrice() / 3).toFixed(2));
-					}
-				} else if (isSale) {
-					eripPaymentPriceValue = `<span class="erip-payment__price-value-old">${+this.getSalePrice()}</span> ${+this.getSalePrice() -
-						+this.getSalePrice() * SCHOOL_SALE_VALUE} BYN`;
-						if (eripPaymentTotalInputElement) {
-							eripPaymentTotalInputElement.value = +this.getSalePrice() - +this.getSalePrice() * SCHOOL_SALE_VALUE;
-							this.setTotalPrice(+this.getSalePrice() - +this.getSalePrice() * SCHOOL_SALE_VALUE);
-						}
-				} else if (Object.values(isPromocode).length) {
-					eripPaymentPriceValue = `<span class="erip-payment__price-value-old">${+this.getSalePrice()}</span> ${+this.getSalePrice() - +window.promocodeData.value} BYN`;
-					if (eripPaymentTotalInputElement) {
-						eripPaymentTotalInputElement.value = +this.getSalePrice() - +window.promocodeData.value;
-						this.setTotalPrice(+this.getSalePrice() - +window.promocodeData.value);
-					}
-				}
-				eripPaymentPriceElement.innerHTML = eripPaymentPriceValue;
-			}
-			else {
-				eripPaymentPriceElement = document.querySelector(`input[name="total"]`);
-				let eripPaymentPriceValue = +`${this.getSalePrice()}`;
-				if (Object.values(isPromocode).length && isInstallment) {
-					eripPaymentPriceValue = +`${((this.getSalePrice() - +window.promocodeData.value) / 3).toFixed(
-						0
-					)}`;
-				} else if (isSale && isInstallment) {
-					eripPaymentPriceValue = +`${((this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE) /
-						3).toFixed(
-						0
-					)}`;
-				} else if (isInstallment) {
-					eripPaymentPriceValue = +`${(this.getSalePrice() / 3).toFixed(
-						0
-					)}`;
-				} else if (isSale) {
-					eripPaymentPriceValue = +`${this.getSalePrice() -
-						this.getSalePrice() * SCHOOL_SALE_VALUE}`;
-				} else if (Object.values(isPromocode).length) {
-					eripPaymentPriceValue = +`${this.getSalePrice() -
-						+window.promocodeData.value}`;
-				}
-				eripPaymentPriceElement.value = eripPaymentPriceValue;
-				this.setTotalPrice(eripPaymentPriceValue);
-			}
-		}
-		// INSTALLMENT
-		updateInstallmentPrice() {
-			const courseData = window.paymentSelect.instance.getCourseData();
-			const installmentPaymentPriceElement = document.querySelector(`.installment-payment__price-value`);
-			const installmentPaymentIdInput = document.querySelector(`input[name="installment-id"]`);
-			const installmentPaymentPriceInput = document.querySelector(`input[name="installment-price"]`);
-			const installmentPaymentCourseName = document.querySelector(`input[name="installment-course-name"]`);
-			installmentPaymentIdInput.value = utilsModule.getRandId() + INSTALLMENT_SHOP_ID;
-			installmentPaymentPriceInput.value = this.getSalePrice();
-			installmentPaymentCourseName.value = courseData.installmentProductName;
-			const installmentDebtPayment = this.getInstallmentDebt(this.getSalePrice(), INSTALLMENT_TERM);
-			installmentPaymentPriceElement.textContent = `${((this.getSalePrice() + installmentDebtPayment) /
-				INSTALLMENT_TERM).toFixed(2)} BYN x ${INSTALLMENT_TERM} месяцев ≈ ${(this.getSalePrice() +
-				installmentDebtPayment).toFixed(2)} BYN`;
-		}
-		recalculateInstallmentPrice(installmentTerm) {
-			const installmentPaymentPriceElement = document.querySelector(`.installment-payment__price-value`);
-			const installmentDebtPayment = this.getInstallmentDebt(this.getSalePrice(), installmentTerm);
-			installmentPaymentPriceElement.textContent = `${((this.getSalePrice() + installmentDebtPayment) /
-				installmentTerm).toFixed(2)} BYN x ${installmentTerm} месяцев ≈ ${(this.getSalePrice() +
-				installmentDebtPayment).toFixed(2)} BYN`;
-		}
-		getInstallmentDebt(coursePrice, installmentTerm = 12) {
-			const installmentMonthPayment = coursePrice / installmentTerm;
-			const installmentMonthPercentageDebt = INSTALLMENT_RATE / installmentTerm;
-			// Only for the first payment
-			let installmentDebtPayment = coursePrice * (installmentMonthPercentageDebt / 100);
-			while (installmentTerm) {
-				installmentDebtPayment +=
-					(coursePrice - installmentMonthPayment) * (installmentMonthPercentageDebt / 100);
-				installmentTerm--;
-				coursePrice = coursePrice - installmentMonthPayment;
-			}
-			return installmentDebtPayment;
-		}
-	}
+            if (eripPaymentPriceElement) {
+                let eripPaymentPriceValue = `${this.getSalePrice()} BYN`;
+                if (Object.values(isPromocode).length && isInstallment) {
+                    eripPaymentPriceValue = `${((this.getSalePrice() - +window.promocodeData.value) / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
+                }
+                else if (isSale && isInstallment) {
+                    eripPaymentPriceValue = `${((this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE) / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
+                }
+                else if (isInstallment) {
+                    eripPaymentPriceValue = `${(this.getSalePrice() / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
+                }
+                else if (isSale) {
+                    eripPaymentPriceValue = `<span class="erip-payment__price-value-old">${this.getSalePrice()}</span> ${(this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE)} BYN`;
+                }
+                else if (Object.values(isPromocode).length) {
+                    eripPaymentPriceValue = `<span class="erip-payment__price-value-old">${this.getSalePrice()}</span> ${this.getSalePrice() - +window.promocodeData.value} BYN`;
+                }
+                eripPaymentPriceElement.innerHTML = eripPaymentPriceValue;
+            }
+        }
+        // INSTALLMENT
+        updateInstallmentPrice() {
+            const courseData = window.paymentSelect.instance.getCourseData();
+            const installmentPaymentPriceElement = document.querySelector(`.installment-payment__price-value`);
+            const installmentPaymentIdInput = document.querySelector(`input[name="installment-id"]`);
+            const installmentPaymentPriceInput = document.querySelector(`input[name="installment-price"]`);
+            const installmentPaymentCourseName = document.querySelector(`input[name="installment-course-name"]`);
+            installmentPaymentIdInput.value = utilsModule.getRandId() + INSTALLMENT_SHOP_ID;
+            installmentPaymentPriceInput.value = this.getSalePrice();
+            installmentPaymentCourseName.value = courseData.installmentProductName;
+            const installmentDebtPayment = this.getInstallmentDebt(this.getSalePrice(), INSTALLMENT_TERM);
+            installmentPaymentPriceElement.textContent = `${((this.getSalePrice() + installmentDebtPayment) / INSTALLMENT_TERM).toFixed(2)} BYN x ${INSTALLMENT_TERM} месяцев ≈ ${(this.getSalePrice() + installmentDebtPayment).toFixed(2)} BYN`;
+        }
+        recalculateInstallmentPrice(installmentTerm) {
+            const installmentPaymentPriceElement = document.querySelector(`.installment-payment__price-value`);
+            const installmentDebtPayment = this.getInstallmentDebt(this.getSalePrice(), installmentTerm);
+            installmentPaymentPriceElement.textContent = `${((this.getSalePrice() + installmentDebtPayment) / installmentTerm).toFixed(2)} BYN x ${installmentTerm} месяцев ≈ ${(this.getSalePrice() + installmentDebtPayment).toFixed(2)} BYN`;
+        }
+        getInstallmentDebt(coursePrice, installmentTerm = 12 ) {
+            const installmentMonthPayment = coursePrice / installmentTerm;
+            const installmentMonthPercentageDebt = INSTALLMENT_RATE / installmentTerm;
+            // Only for the first payment
+            let installmentDebtPayment = coursePrice * (installmentMonthPercentageDebt / 100);
+            while ( installmentTerm ) {
+                installmentDebtPayment += ( coursePrice - installmentMonthPayment ) * ( installmentMonthPercentageDebt / 100 );
+                installmentTerm--;
+                coursePrice = coursePrice - installmentMonthPayment;
+            }
+            return installmentDebtPayment;
+        }
+    }
 
-	const paymentInstance = new Payment();
-	window.payment = {
-		instance: paymentInstance
-	};
+    const paymentInstance = new Payment();
+    window.payment = {
+        instance: paymentInstance
+    }
 })();
-
 'use strict';
 
 (function() {
@@ -715,154 +640,133 @@ const PROMOCODE_SALE_VALUE = 50;
 'use strict';
 
 (function() {
-	// Load modules
-	const paymentMethodModule = window.paymentMethod.instance;
-	const paymentModule = window.payment.instance;
-	const utilsModule = window.utils;
-	const INSTALLMENT_TITLE = `Оплата следующего этапа`;
+    // Load modules
+    const paymentMethodModule = window.paymentMethod.instance;
+    const paymentModule = window.payment.instance;
+    const utilsModule = window.utils;
+    
+    class PaymentSelect {
+        _courseData = {
+            title: ``,
+            installmentProductName: ``,
+            fullPrice: 0,
+            salePrice: 0
+        }
 
-	class PaymentSelect {
-		_courseData = {
-			title: ``,
-			installmentProductName: ``,
-			fullPrice: 0,
-			salePrice: 0
-		};
+        constructor(paymentSelectContainer) {
+            this._el = document.querySelector(paymentSelectContainer);
 
-		constructor(paymentSelectContainer) {
-			this._el = document.querySelector(paymentSelectContainer);
+            if (this._el) {
+                this._paymentType = this._el.dataset.type;
+                this._el.addEventListener(`click`, this.onPaymentSelectClickHandler.bind(this));
+            }
+        }
 
-			if (this._el) {
-				this._paymentType = this._el.dataset.type;
-				this._el.addEventListener(`click`, this.onPaymentSelectClickHandler.bind(this));
-			}
-		}
+        onPaymentSelectClickHandler(evt) {
+            const target = evt.target;
+            const courseListElements = this._el.querySelectorAll(`.ums-select__list-item`);
 
-		onPaymentSelectClickHandler(evt) {
-			const target = evt.target;
-			const courseListElements = this._el.querySelectorAll(`.ums-select__list-item`);
+            if (target.matches(`button`)) {
+                this._el.querySelector(`.ums-select__btn`).classList.toggle(`ums-select__btn_state-active`);
+                this._el.closest(`.form__select`).classList.toggle(`form__select_state-active`)
+                this._el.querySelector(`.ums-select__list`).classList.toggle(`ums-select__list_visibility-open`);
+            }
+            if (target.matches(`li`)) {
+                const paymentSections = document.querySelectorAll(`.payment-section`);
+                // RESET PAYMENT'S OPTIONS
+                const paymentMethodInputCollection = document.querySelectorAll(`.payment-item__input`);
+                if (paymentMethodInputCollection.length) {
+                    for (const paymentMethodInput of paymentMethodInputCollection) {
+                        paymentMethodInput.checked = false;
+                    }
+                    utilsModule.removeClass(paymentSections, `payment-section_state-active`);
+                }
+                const paymentLevel = +target.dataset.paymentLevel;
+                const partialPayment = target.dataset.partialPayment;
+                const paymentButton = this._el.querySelector(`.ums-select__btn`);
+                this.fillCourseData(target);
+                utilsModule.removeClass(courseListElements, `ums-select__list-item_state-active`);
+                target.classList.add(`ums-select__list-item_state-active`);
 
-			if (target.matches(`button`)) {
-				this._el.querySelector(`.ums-select__btn`).classList.toggle(`ums-select__btn_state-active`);
-				this._el.closest(`.form__select`).classList.toggle(`form__select_state-active`);
-				this._el.querySelector(`.ums-select__list`).classList.toggle(`ums-select__list_visibility-open`);
-			}
-			if (target.matches(`li`)) {
-				const paymentSections = document.querySelectorAll(`.payment-section`);
-				const manualInputContainer = document.querySelector(`.erip-payment__price-input`);
-				const eripPaymentOptions = document.querySelector(`.erip-payment__grid`);
-				const eripPaymentMessage = document.querySelector(`.erip-payment__message`);
-				// RESET PAYMENT'S OPTIONS
-				const paymentMethodInputCollection = document.querySelectorAll(`.payment-item__input`);
-				if (paymentMethodInputCollection.length) {
-					for (const paymentMethodInput of paymentMethodInputCollection) {
-						paymentMethodInput.checked = false;
-					}
-					utilsModule.removeClass(paymentSections, `payment-section_state-active`);
-				}
-				const paymentLevel = +target.dataset.paymentLevel;
-				const partialPayment = target.dataset.partialPayment;
-				const paymentButton = this._el.querySelector(`.ums-select__btn`);
-				this.fillCourseData(target);
-				utilsModule.removeClass(courseListElements, `ums-select__list-item_state-active`);
-				target.classList.add(`ums-select__list-item_state-active`);
+                if (paymentLevel === 2) {
+                    const paymentSections = document.querySelectorAll(`.payment-section`);
+                    paymentMethodModule.setPaymentMethodIndex(0);
+                    utilsModule.removeClass(paymentSections, `payment-section_state-active`);
+                    paymentSections[0].classList.add(`payment-section_state-active`);
+                    paymentMethodModule.changePaymentMethod(0);
+                    // Переписать JQuery
+                    jQuery(`.payment-item:not(:nth-child(1))`).hide();
+                    jQuery(`.webpay-form__sale-checkbox`).hide();
+                    jQuery(`.toggle-checkbox`).hide();
+                } else {
+                    // Переписать JQuery
+                    jQuery(`.payment-item:not(:nth-child(1)), .payment-item:not(:nth-child(2))`).show();
+                    jQuery(`.webpay-form__sale-checkbox`).show();
+                    jQuery(`.toggle-checkbox`).show();
+                }
 
-				if (paymentLevel === 2) {
-					const paymentSections = document.querySelectorAll(`.payment-section`);
-					paymentMethodModule.setPaymentMethodIndex(0);
-					utilsModule.removeClass(paymentSections, `payment-section_state-active`);
-					paymentSections[0].classList.add(`payment-section_state-active`);
-					paymentMethodModule.changePaymentMethod(0);
-					// SHOW MANUAL INPUT
-					
-					if (manualInputContainer) {
-						manualInputContainer.previousElementSibling.classList.add(`erip-payment__price-value_is-hidden`);
-						manualInputContainer.classList.remove(`erip-payment__price-input_is-hidden`);
-						eripPaymentOptions.classList.add(`erip-payment__grid_is-hidden`);
-						eripPaymentMessage.classList.add(`erip-payment__message_is-hidden`);
-						// UPDATE FULL PRICE OBJECT
-						this._courseData.fullPrice = +manualInputContainer.querySelector(`input`).value;
-						this._courseData.installmentProductName = INSTALLMENT_TITLE;
-					}
-					// Переписать JQuery
-					jQuery(`.payment-item:not(:nth-child(1))`).hide();
-					jQuery(`.webpay-form__sale-checkbox`).hide();
-					jQuery(`.toggle-checkbox`).hide();
-				} else {
-					// HIDE MANUAL INPUT
-					if (manualInputContainer) {
-						manualInputContainer.previousElementSibling.classList.remove(`erip-payment__price-value_is-hidden`);
-						manualInputContainer.classList.add(`erip-payment__price-input_is-hidden`);
-						eripPaymentOptions.classList.remove(`erip-payment__grid_is-hidden`);
-						eripPaymentMessage.classList.remove(`erip-payment__message_is-hidden`);
-					}
-					// Переписать JQuery
-					jQuery(`.payment-item:not(:nth-child(1)), .payment-item:not(:nth-child(2))`).show();
-					jQuery(`.webpay-form__sale-checkbox`).show();
-					jQuery(`.toggle-checkbox`).show();
-				}
+                if (this._paymentType === `payment`) {
+                    paymentModule.setTotalPrice(this._courseData.salePrice);
+                    const saleInputs = document.querySelectorAll(`input[name="sale"]`);
+                    for (let input of saleInputs) {
+                        input.checked = false;
+                    }
+                } else {
+                    paymentModule.setTotalPrice(this._courseData.fullPrice);
+                }
 
-				if (this._paymentType === `payment`) {
-					paymentModule.setTotalPrice(this._courseData.salePrice);
-					const saleInputs = document.querySelectorAll(`input[name="sale"]`);
-					for (let input of saleInputs) {
-						input.checked = false;
-					}
-				} else {
-					paymentModule.setTotalPrice(this._courseData.fullPrice);
-				}
+                if (partialPayment === `no`) {
+                    jQuery(`.payment-item:nth-child(3)`).hide();
+                }
+                else {
+                    jQuery(`.payment-item:not(:nth-child(2))`).show();
+                }
 
-				if (partialPayment === `no`) {
-					jQuery(`.payment-item:nth-child(3)`).hide();
-				} else {
-					jQuery(`.payment-item:not(:nth-child(2))`).show();
-				}
+                paymentButton.dataset.price = this._courseData.fullPrice;
+                paymentButton.dataset.salePrice = this._courseData.salePrice;
+                paymentButton.innerHTML = ``;
+                const targetChildNodes = target.childNodes;
+                for (const targetChildNode of Array.from(targetChildNodes)) {
+                    console.log(targetChildNode);
+                    if (targetChildNode.nodeType === 3) {
+                        paymentButton.textContent = targetChildNode.textContent;
+                    }
+                    else {
+                        paymentButton.appendChild(targetChildNode.cloneNode(true));
+                    }
+                }
+                paymentButton.classList.remove(`ums-select__btn_state-active`);
+                this._el.closest(`.form__select`).classList.toggle(`form__select_state-active`)
+                this._el.querySelector(`.ums-select__list`).classList.remove(`ums-select__list_visibility-open`);
 
-				paymentButton.dataset.price = this._courseData.fullPrice;
-				paymentButton.dataset.salePrice = this._courseData.salePrice;
-				paymentButton.innerHTML = ``;
-				const targetChildNodes = target.childNodes;
-				for (const targetChildNode of Array.from(targetChildNodes)) {
-					if (targetChildNode.nodeType === 3) {
-						paymentButton.textContent = targetChildNode.textContent;
-					} else {
-						paymentButton.appendChild(targetChildNode.cloneNode(true));
-					}
-				}
-				paymentButton.classList.remove(`ums-select__btn_state-active`);
-				this._el.closest(`.form__select`).classList.toggle(`form__select_state-active`);
-				this._el.querySelector(`.ums-select__list`).classList.remove(`ums-select__list_visibility-open`);
+                paymentModule.setCurrent(this._courseData.title);
+                paymentModule.setPrice(this._courseData.fullPrice);
+                paymentModule.setSalePrice(this._courseData.salePrice);
+                paymentModule.changeInputPrice(paymentMethodModule.getPaymentMethodIndex());
+            }
+        }
+        
+        getPaymentType() {
+            return this._paymentType;
+        }
 
-				paymentModule.setCurrent(this._courseData.title);
-				paymentModule.setPrice(this._courseData.fullPrice);
-				paymentModule.setSalePrice(this._courseData.salePrice);
-				paymentModule.setTotalPrice(this._courseData.fullPrice);
-				paymentModule.changeInputPrice(paymentMethodModule.getPaymentMethodIndex());
-			}
-		}
+        getCourseData() {
+            return this._courseData;
+        }
 
-		getPaymentType() {
-			return this._paymentType;
-		}
+        fillCourseData(courseListElement) {
+            this._courseData.installmentProductName = courseListElement.dataset.courseName;
+            this._courseData.title = courseListElement.textContent;
+            this._courseData.fullPrice = +courseListElement.dataset.price;
+            this._courseData.salePrice = +courseListElement.dataset.salePrice;
+        }
+    }
 
-		getCourseData() {
-			return this._courseData;
-		}
-
-		fillCourseData(courseListElement) {
-			this._courseData.installmentProductName = courseListElement.dataset.courseName;
-			this._courseData.title = courseListElement.textContent;
-			this._courseData.fullPrice = +courseListElement.dataset.price;
-			this._courseData.salePrice = +courseListElement.dataset.salePrice;
-		}
-	}
-
-	const paymentSelectInstance = new PaymentSelect(`.ums-select`);
-	window.paymentSelect = {
-		instance: paymentSelectInstance
-	};
+    const paymentSelectInstance = new PaymentSelect(`.ums-select`);
+    window.paymentSelect = {
+        instance: paymentSelectInstance
+    }
 })();
-
 'use strict';
 
 (function () {
@@ -1020,15 +924,11 @@ const PROMOCODE_SALE_VALUE = 50;
                 promocodeInputElement.querySelector('.form__label').classList.remove('form__label_active');
 
                 if (paymentSelect.getPaymentType() === 'payment') {
-                    const promocodeInputElementWrapper = promocodeInputElement.closest('.payment-form__section-grid');
-                    if (promocodeInputElementWrapper) {
-                        const promocodeSaleInputElement = promocodeInputElementWrapper.querySelector('.webpay-form__sale-checkbox');
-                        if (promocodeSaleInputElement) {
-                            promocodeSaleInputElement.querySelector('input').checked = false;
-                            promocodeSaleInputElement.querySelector('input').classList.toggle('webpay-form__sale-checkbox_state-disabled');
-                            paymentInstance.changeInputPrice(paymentMethod.getPaymentMethodIndex(), false, false);
-                        }
+                    if (promocodeInputElement.closest('.payment-form__section-grid')) {
+                        promocodeInputElement.closest('.payment-form__section-grid').querySelector('.webpay-form__sale-checkbox').querySelector('input').checked = false;
+                        promocodeInputElement.closest('.payment-form__section-grid').querySelector('.webpay-form__sale-checkbox').classList.toggle('webpay-form__sale-checkbox_state-disabled');
                     }
+                    paymentInstance.changeInputPrice(paymentMethod.getPaymentMethodIndex(), false, false);
                 }
             }
             if (target.matches('button')) {
@@ -1212,686 +1112,616 @@ const PROMOCODE_SALE_VALUE = 50;
 })();
 'use strict';
 
-// Ф-я для изменения длины инпута с ценой курса
-// Костыль card-page
-function claculatePriceLength(element) {
-	const priceNumberCount = element.value.length;
-
-	if (window.innerWidth <= 767) {
-		element.style.width = `${priceNumberCount * 18}px`;
-	} else {
-		element.style.width = `${priceNumberCount * 25}px`;
-	}
-}
-//
 function addErrorClass(inputElement, errorTextElement) {
-	inputElement.classList.add('wpcf7-not-valid');
-	errorTextElement.querySelector('.form__error-label').classList.add('form__error-label_active');
+    inputElement.classList.add('wpcf7-not-valid');
+    errorTextElement.querySelector('.form__error-label').classList.add('form__error-label_active');
 }
 function removeErrorClass(inputElement, errorTextElement) {
-	inputElement.classList.remove('wpcf7-not-valid');
-	errorTextElement.querySelector('.form__error-label').classList.remove('form__error-label_active');
+    inputElement.classList.remove('wpcf7-not-valid');
+    errorTextElement.querySelector('.form__error-label').classList.remove('form__error-label_active');
 }
 function detectDeviceWidth() {
-	if (window.innerWidth < 992) {
-		isMobile = true;
-		return;
-	}
-	isMobile = false;
+    if (window.innerWidth < 992) {
+        isMobile = true;
+        return;
+    }
+    isMobile = false;
 }
 function getScrollbarWidth() {
-	return window.innerWidth - document.documentElement.clientWidth;
+    return window.innerWidth - document.documentElement.clientWidth;
 }
 function changeLayout() {
-	detectDeviceWidth();
-	if (isMobile && !isCompleted) {
-		jQuery('.about-course__title').after(jQuery('.about-course__author'));
-		jQuery('.about-course__title').after(jQuery('.about-course__video'));
-		jQuery('.lecturer-modal__grid').after(jQuery('.lecturer-modal__text'));
-		jQuery('.lecturer-modal__img img').after(jQuery('.lecturer-modal__title'));
-		jQuery('.footer-menu').after(jQuery('.google-testimonials'));
-		isCompleted = true;
-	} else if (!isMobile && isCompleted) {
-		jQuery('.about-course .col-lg-7').append(jQuery('.about-course__video'));
-		jQuery('.about-course .col-lg-7').append(jQuery('.about-course__author'));
-		jQuery('.lecturer-modal__info').append(jQuery('.lecturer-modal__title'));
-		jQuery('.lecturer-modal__info').append(jQuery('.lecturer-modal__text'));
-		jQuery('.footer__logo').after(jQuery('.google-testimonials'));
-		isCompleted = false;
-	}
+    detectDeviceWidth();
+    if (isMobile && !isCompleted) {
+        jQuery('.about-course__title').after(jQuery('.about-course__author'));
+        jQuery('.about-course__title').after(jQuery('.about-course__video'));
+        jQuery('.lecturer-modal__grid').after(jQuery('.lecturer-modal__text'));
+        jQuery('.lecturer-modal__img img').after(jQuery('.lecturer-modal__title'));
+        jQuery('.footer-menu').after(jQuery('.google-testimonials'));
+        isCompleted = true;
+    } else if (!isMobile && isCompleted) {
+        jQuery('.about-course .col-lg-7').append(jQuery('.about-course__video'));
+        jQuery('.about-course .col-lg-7').append(jQuery('.about-course__author'));
+        jQuery('.lecturer-modal__info').append(jQuery('.lecturer-modal__title'));
+        jQuery('.lecturer-modal__info').append(jQuery('.lecturer-modal__text'));
+        jQuery('.footer__logo').after(jQuery('.google-testimonials'));
+        isCompleted = false;
+    }
 }
 function getCookie(name) {
-	const matches = document.cookie.match(
-		new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
-	);
-	return matches ? decodeURIComponent(matches[1]) : undefined;
+    const matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 function setCookie(name, value, options = {}) {
-	let updatedCookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
-	for (let optionKey in options) {
-		updatedCookie += '; ' + optionKey;
-		let optionValue = options[optionKey];
-		if (optionValue !== true) {
-			updatedCookie += '=' + optionValue;
-		}
-	}
-	document.cookie = updatedCookie;
+    let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+    for (let optionKey in options) {
+        updatedCookie += "; " + optionKey;
+        let optionValue = options[optionKey];
+        if (optionValue !== true) {
+            updatedCookie += "=" + optionValue;
+        }
+    }
+    document.cookie = updatedCookie;
 }
 function showPopup() {
-	const modal = jQuery('#event-modal');
-	const cookieData = {
-		path: '/',
-		secure: true,
-		'max-age': 3600
-	};
-	if (modal) {
-		const cookie = getCookie('event');
-		if (!cookie) {
-			setCookie('event', 'true', cookieData);
-			setTimeout(function() {
-				modal.modal({
-					fadeDuration: 300
-				});
-			}, 5000);
-		}
-	}
+    const modal = jQuery('#event-modal');
+    const cookieData = {
+        path: '/',
+        secure: true,
+        'max-age': 3600
+    };
+    if (modal) {
+        const cookie = getCookie('event');
+        if (!cookie) {
+            setCookie('event', 'true', cookieData);
+            setTimeout(function () {
+                modal.modal({
+                    fadeDuration: 300
+                });
+            }, 5000);
+        }
+    }
 }
 function handleSelect(evt) {
-	const target = evt.target;
-	const targetName = target.name;
-	const targetValue = target.value;
+    const target = evt.target;
+    const targetName = target.name;
+    const targetValue = target.value;
 
-	switch (targetName) {
-		case 'test-course-date':
-			document.querySelector('input[name="ums-date"]').value = targetValue;
-			break;
-		case 'timetable':
-			document.location.replace(targetValue);
-			break;
-		case 'delivery':
-			if (+targetValue === 1) {
-				target.parentElement.nextElementSibling.classList.add('delivery-input_state-active');
-			}
-			if (+targetValue === 0) {
-				target.parentElement.classList.remove('form__select_state-active');
-				target.nextElementSibling.classList.remove('form__label_active');
-			} else {
-				target.parentElement.nextElementSibling.classList.remove('delivery-input_state-active');
-				target.parentElement.classList.add('form__select_state-active');
-				target.nextElementSibling.classList.add('form__label_active');
-			}
-			break;
-	}
+    switch (targetName) {
+        case 'test-course-date':
+            document.querySelector('input[name="ums-date"]').value = targetValue;
+            break;
+        case 'timetable':
+            document.location.replace(targetValue);
+            break;
+        case 'delivery':
+            if (+targetValue === 1) {
+                target.parentElement.nextElementSibling.classList.add('delivery-input_state-active');
+            }
+            if (+targetValue === 0) {
+                target.parentElement.classList.remove('form__select_state-active');
+                target.nextElementSibling.classList.remove('form__label_active');
+            } else {
+                target.parentElement.nextElementSibling.classList.remove('delivery-input_state-active');
+                target.parentElement.classList.add('form__select_state-active');
+                target.nextElementSibling.classList.add('form__label_active');
+            }
+            break;
+    }
 }
 function initInputListener() {
-	const inputs = document.querySelectorAll('.form__input input, .form__input textarea');
+    const inputs = document.querySelectorAll('.form__input input, .form__input textarea');
 
-	for (const input of inputs) {
-		const wrapper = input.closest('.form__input');
-		const label = wrapper.querySelector('.form__label');
+    for (const input of inputs) {
+        const wrapper = input.closest('.form__input');
+        const label = wrapper.querySelector('.form__label');
 
-		if (input.value !== '') {
-			wrapper.classList.add('form__input_filled');
-			if (label) {
-				label.classList.add('form__label_active');
-			}
-		}
-		input.addEventListener('focus', () => {
-			wrapper.classList.add('form__input_focused');
-			wrapper.classList.add('form__input_filled');
-			if (label) {
-				label.classList.add('form__label_active');
-			}
-		});
-		input.addEventListener('blur', () => {
-			if (input.value !== '') {
-				wrapper.classList.remove('form__input_focused');
-				return;
-			}
-			wrapper.classList.remove('form__input_filled');
-			wrapper.classList.remove('form__input_focused');
-			if (label) {
-				label.classList.remove('form__label_active');
-			}
-		});
-	}
+        if (input.value !== '') {
+            wrapper.classList.add('form__input_filled');
+            if (label) {
+                label.classList.add('form__label_active');
+            }
+        }
+        input.addEventListener('focus', () => {
+            wrapper.classList.add('form__input_focused');
+            wrapper.classList.add('form__input_filled');
+            if (label) {
+                label.classList.add('form__label_active');
+            }
+        });
+        input.addEventListener('blur', () => {
+            if (input.value !== '') {
+                wrapper.classList.remove('form__input_focused');
+                return;
+            }
+            wrapper.classList.remove('form__input_filled');
+            wrapper.classList.remove('form__input_focused');
+            if (label) {
+                label.classList.remove('form__label_active');
+            }
+        });
+    }
 }
 function videoModalCloseHandler(event) {
-	const modal = event.target;
-	modal.querySelector('iframe').setAttribute('src', '');
+    const modal = event.target;
+    modal.querySelector('iframe').setAttribute('src', '');
 }
 function lecturerHandlerFunction(evt) {
-	const target = evt.target.closest('.lecturers-page__item');
-	const id = target.dataset.lecturerPostId;
-	const data = {
-		action: 'team',
-		id: id
-	};
-	const beforeSendHandler = function() {
-		target.style.opacity = 0.3;
-	};
+    const target = evt.target.closest('.lecturers-page__item');
+    const id = target.dataset.lecturerPostId;
+    const data = {
+        action: 'team',
+        id: id
+    }
+    const beforeSendHandler = function () {
+        target.style.opacity = .3;
+    }
 
-	jQuery.when(window.utils.ajaxRequest(data, beforeSendHandler, target)).then(
-		(response) => {
-			target.style.opacity = 1;
-			document.querySelector('.ajax-lecturer-modal').innerHTML = '';
-			document.querySelector('.ajax-lecturer-modal').insertAdjacentHTML('afterBegin', response);
-			if (window.innerWidth < 992) {
-				jQuery('.ajax-lecturer-modal .lecturer-modal__img img').after(
-					jQuery('.ajax-lecturer-modal .modal__title')
-				);
-				jQuery('.ajax-lecturer-modal').append(jQuery('.ajax-lecturer-modal .lecturer-modal__text'));
-			}
-			jQuery('.ajax-lecturer-modal').modal();
-		},
-		(error) => console.log(new Error(error))
-	);
+    jQuery.when(window.utils.ajaxRequest(data, beforeSendHandler, target)).then((response) => {
+        target.style.opacity = 1;
+        document.querySelector('.ajax-lecturer-modal').innerHTML = '';
+        document.querySelector('.ajax-lecturer-modal').insertAdjacentHTML('afterBegin', response);
+        if (window.innerWidth < 992) {
+            jQuery('.ajax-lecturer-modal .lecturer-modal__img img').after(jQuery('.ajax-lecturer-modal .modal__title'));
+            jQuery('.ajax-lecturer-modal').append(jQuery('.ajax-lecturer-modal .lecturer-modal__text'));
+        }
+        jQuery('.ajax-lecturer-modal').modal();
+    }, error => console.log(new Error(error)));
 }
 function addCustomEventHandler(event, collection, handlerFunction) {
-	for (const el of collection) {
-		el.addEventListener(event, handlerFunction);
-	}
+    for (const el of collection) {
+        el.addEventListener(event, handlerFunction);
+    }
 }
 function wpcf7InvalidHandler(event) {
-	const target = event.target;
-	const button = target.querySelector('button[type="submit"]');
+    const target = event.target;
+    const button = target.querySelector('button[type="submit"]');
 
-	button.textContent = defaultSubmitButtonText;
-	button.classList.remove('btn_is-loading');
+    button.textContent = defaultSubmitButtonText;
+    button.classList.remove('btn_is-loading');
 }
 function wpcf7SentHandler(event) {
-	const wpcf7MailStatus = event.detail.status;
-	const target = event.target;
-	const id = +event.detail.contactFormId;
-	// const uri = event.target.baseURI;
-	const inputs = event.detail.inputs;
-	const button = target.querySelector('button[type="submit"]');
-	let requestData, crmObject;
-	let sendPulseData;
+    const wpcf7MailStatus = event.detail.status;
+    const target = event.target;
+    const id = +event.detail.contactFormId;
+    // const uri = event.target.baseURI;
+    const inputs = event.detail.inputs;
+    const button = target.querySelector('button[type="submit"]');
+    let requestData, crmObject;
+    let sendPulseData;
 
-	switch (id) {
-		// INSTALLMENT PAYMENT SUCCESS MODAL
-		case 6494:
-			const installmentForm = document.querySelector(`.installment-form`);
-			const installmentFormData = new FormData(installmentForm);
-			installmentFormData.set(`action`, `installment`);
-			const installmentRequest = fetch(ajax.url, {
-				method: 'POST',
-				credentials: 'same-origin',
-				body: installmentFormData
-			});
-			installmentRequest
-				.then((resp) => resp.json())
-				.then((data) => {
-					if (data.status === `OK`) {
-						const installmentPaymentForm = document.querySelector(`.installment-form`);
-						const paymentSectionCollection = document.querySelectorAll(`.payment-section`);
-						const paymentMethodCollection = document.querySelectorAll(`.payment-item__input`);
-						// SHOW SUCCESS MODAL
-						jQuery(`#modal-success-installment-payment`).modal();
-						// RESET PAYMENT MODULE
-						globalUtils.resetForm(installmentPaymentForm);
-						globalUtils.removeClass(paymentSectionCollection, `payment-section_state-active`);
-						for (const paymentMethod of paymentMethodCollection) {
-							paymentMethod.checked = false;
-						}
-						button.textContent = defaultSubmitButtonText;
-						button.classList.remove('btn_is-loading');
-						jQuery('body, html').animate(
-							{
-								scrollTop: 0
-							},
-							800
-						);
-					} else {
-						alert('Ошибка регистрации заявки. Пожалуйста свяжитесь с менеджером школы.');
-					}
-				})
-				.catch((error) => console.log(error));
-			break;
-		case 131:
-			console.log(wpcf7MailStatus);
-			if (wpcf7MailStatus === `mail_sent`) {
-				button.textContent = defaultSubmitButtonText;
-				button.classList.remove('btn_is-loading');
-				jQuery.modal.close();
-				jQuery('#success-modal-first').modal();
-				//Send to CRM
-				crmObject = new amoCRMInsance(131, inputs, 'lead');
-				requestData = crmObject.getRequestObject();
-				console.log(requestData);
-				jQuery.when(window.utils.ajaxRequest(requestData)).then(
-					(resp) => {
-						console.log(resp);
-						// Yandex conversion
-						ym(49171171, 'reachGoal', 'lead_form');
-					},
-					(error) => console.log(new Error(error))
-				);
-			}
-			break;
-		case 837:
-			button.textContent = defaultSubmitButtonText;
-			button.classList.remove('btn_is-loading');
-			jQuery.modal.close();
-			jQuery('#success-modal-first').modal();
-			break;
-		case 859:
-			crmObject = new amoCRMInsance(859, inputs, 'intensive');
-			requestData = crmObject.getRequestObject();
-			jQuery.when(window.utils.ajaxRequest(requestData)).then(
-				() => {
-					button.textContent = defaultSubmitButtonText;
-					button.classList.remove('btn_is-loading');
-					jQuery.modal.close();
-					jQuery('#success-modal-first').modal();
-				},
-				(error) => console.log(new Error(error))
-			);
-			break;
-		case 1447:
-			if (wpcf7MailStatus === `mail_sent`) {
-				target.querySelector('.form__input').classList.remove('form__input_filled');
-				target.querySelector('.form__label').classList.remove('form__label_active');
-				button.textContent = defaultSubmitButtonText;
-				button.classList.remove('btn_is-loading');
-				jQuery.modal.close();
-				jQuery('#success-modal-free-start').modal();
-			}
-			crmObject = new amoCRMInsance(1447, inputs, 'free');
-			requestData = crmObject.getRequestObject();
-			sendPulseData = {
-				action: 'add_to_book',
-				id: 89064264,
-				email: inputs[3].value
-			};
-			// SENDING DATA TO AMOCRM
-			jQuery.when(window.utils.ajaxRequest(requestData)).then(
-				(data) => {
-					const respObject = JSON.parse(data);
-					if (respObject.result) {
-						//Yandex conversion
-						// ym(49171171, 'reachGoal', 'freelessons');
-					}
-				},
-				(error) => console.log(new Error(error))
-			);
-			// SENDING DATA TO SENDPULSE
-			jQuery.when(window.utils.ajaxRequest(sendPulseData)).then(
-				(resp) => {
-					console.log(resp);
-				},
-				(error) => console.log(new Error(error))
-			);
-			break;
-		case 1655:
-			sendPulseData = {
-				action: 'add_to_book',
-				id: 89064300,
-				email: inputs[1].value
-			};
-			jQuery.when(window.utils.ajaxRequest(sendPulseData)).then(
-				(resp) => {
-					const respObject = JSON.parse(resp);
-					if (respObject.result) {
-						target.querySelector('.form__input').classList.remove('form__input_filled');
-						target.querySelector('.form__label').classList.remove('form__label_active');
-						button.textContent = defaultSubmitButtonText;
-						button.classList.remove('btn_is-loading');
-						jQuery.modal.close();
-						jQuery('#success-modal-test').modal();
-					}
-				},
-				(error) => console.log(new Error(error))
-			);
-			break;
-		case 1628:
-			sendPulseData = {
-				action: 'add_to_book',
-				id: 89086955,
-				email: inputs[0].value
-			};
-			jQuery.when(window.utils.ajaxRequest(sendPulseData)).then(
-				(resp) => {
-					const respObject = JSON.parse(resp);
-					if (respObject.result) {
-						//Yandex conversion
-						// ym(49171171, 'reachGoal', 'emailsub');
-						// ga('send', 'event', { eventCategory: 'emailbutton', eventAction: 'click'});
-						// gtag('event', 'success', {'send_to': 'analytics','event_category': 'emailbutton'});
-						// gtag('event', 'conversion', {'event_category' : 'emailbutton', eventAction: 'click'});
-						target.querySelector('.form__input').classList.remove('form__input_filled');
-						target.querySelector('.form__label').classList.remove('form__label_active');
-						button.textContent = defaultSubmitButtonText;
-						button.classList.remove('btn_is-loading');
-						jQuery('#success-modal-third').modal();
-					}
-				},
-				(error) => console.log(new Error(error))
-			);
-			break;
-		case 779:
-			crmObject = new amoCRMInsance(779, inputs, 'call');
-			requestData = crmObject.getRequestObject();
-			jQuery.when(window.utils.ajaxRequest(requestData)).then(
-				() => {
-					button.textContent = defaultSubmitButtonText;
-					button.classList.remove('btn_is-loading');
-					jQuery.modal.close();
-					jQuery('#success-modal-second').modal();
-				},
-				(error) => console.log(new Error(error))
-			);
-			break;
-		case 1839:
-			crmObject = new amoCRMInsance(1839, inputs, 'intensive');
-			requestData = crmObject.getRequestObject();
-			jQuery.when(window.utils.ajaxRequest(requestData)).then(
-				() => {
-					ga('send', { hitType: 'event', eventCategory: 'emailbutton', eventAction: 'click' });
-					button.textContent = defaultSubmitButtonText;
-					button.classList.remove('btn_is-loading');
-					jQuery.modal.close();
-					jQuery('#success-modal-first').modal();
-				},
-				(error) => console.log(new Error(error))
-			);
-			break;
-		case 1805:
-			button.textContent = defaultSubmitButtonText;
-			button.classList.remove('btn_is-loading');
-			jQuery.modal.close();
-			jQuery('#success-modal-second').modal();
-			break;
-	}
+    switch (id) {
+        // INSTALLMENT PAYMENT SUCCESS MODAL
+        case 6494:
+            const installmentForm = document.querySelector(`.installment-form`);
+            const installmentFormData = new FormData(installmentForm);
+            installmentFormData.set(`action`, `installment`);
+            const installmentRequest = fetch(ajax.url, {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: installmentFormData
+            });
+            installmentRequest.then(resp => resp.json()).then(data => {
+                if (data.status === `OK`) {
+                    const installmentPaymentForm = document.querySelector(`.installment-form`);
+                    const paymentSectionCollection = document.querySelectorAll(`.payment-section`);
+                    const paymentMethodCollection = document.querySelectorAll(`.payment-item__input`);
+                    // SHOW SUCCESS MODAL
+                    jQuery(`#modal-success-installment-payment`).modal();
+                    // RESET PAYMENT MODULE
+                    globalUtils.resetForm(installmentPaymentForm);
+                    globalUtils.removeClass(paymentSectionCollection, `payment-section_state-active`);
+                    for (const paymentMethod of paymentMethodCollection) {
+                        paymentMethod.checked = false;
+                    }
+                    button.textContent = defaultSubmitButtonText;
+                    button.classList.remove('btn_is-loading');
+                    jQuery('body, html').animate({
+                        scrollTop: 0
+                    }, 800);
+                }
+                else {
+                    alert('Ошибка регистрации заявки. Пожалуйста свяжитесь с менеджером школы.');
+                }
+            }).catch(error => console.log(error));
+            break;
+        case 131:
+            console.log(wpcf7MailStatus);
+            if (wpcf7MailStatus === `mail_sent`) {
+                button.textContent = defaultSubmitButtonText;
+                button.classList.remove('btn_is-loading');
+                jQuery.modal.close();
+                jQuery('#success-modal-first').modal();
+                //Send to CRM
+                crmObject = new amoCRMInsance(131, inputs, 'lead');
+                requestData = crmObject.getRequestObject();
+                console.log(requestData);
+                jQuery.when(window.utils.ajaxRequest(requestData)).then((resp) => {
+                    console.log(resp);
+                    // Yandex conversion
+                    ym(49171171, 'reachGoal', 'lead_form');
+                }, error => console.log(new Error(error)));
+            }
+            break;
+        case 837:
+            button.textContent = defaultSubmitButtonText;
+            button.classList.remove('btn_is-loading');
+            jQuery.modal.close();
+            jQuery('#success-modal-first').modal();
+            break;
+        case 859:
+            crmObject = new amoCRMInsance(859, inputs, 'intensive');
+            requestData = crmObject.getRequestObject();
+            jQuery.when(window.utils.ajaxRequest(requestData)).then(() => {
+                button.textContent = defaultSubmitButtonText;
+                button.classList.remove('btn_is-loading');
+                jQuery.modal.close();
+                jQuery('#success-modal-first').modal();
+            }, error => console.log(new Error(error)));
+            break;
+        case 1447:
+            if (wpcf7MailStatus === `mail_sent`) {
+                target.querySelector('.form__input').classList.remove('form__input_filled');
+                target.querySelector('.form__label').classList.remove('form__label_active');
+                button.textContent = defaultSubmitButtonText;
+                button.classList.remove('btn_is-loading');
+                jQuery.modal.close();
+                jQuery('#success-modal-free-start').modal();
+            }
+            crmObject = new amoCRMInsance(1447, inputs, 'free');
+            requestData = crmObject.getRequestObject();
+            sendPulseData = {
+                action: 'add_to_book',
+                id: 89064264,
+                email: inputs[3].value
+            }
+            // SENDING DATA TO AMOCRM
+            jQuery.when(window.utils.ajaxRequest(requestData)).then(data => {
+                const respObject = JSON.parse(data);
+                if (respObject.result) {
+                    //Yandex conversion
+                    // ym(49171171, 'reachGoal', 'freelessons');
+                }
+            }, error => console.log(new Error(error)));
+            // SENDING DATA TO SENDPULSE
+            jQuery.when(window.utils.ajaxRequest(sendPulseData)).then(resp => {
+                console.log(resp);
+            }, error => console.log(new Error(error)));
+            break;
+        case 1655:
+            sendPulseData = {
+                action: 'add_to_book',
+                id: 89064300,
+                email: inputs[1].value
+            }
+            jQuery.when(window.utils.ajaxRequest(sendPulseData)).then((resp) => {
+                const respObject = JSON.parse(resp);
+                if (respObject.result) {
+                    target.querySelector('.form__input').classList.remove('form__input_filled');
+                    target.querySelector('.form__label').classList.remove('form__label_active');
+                    button.textContent = defaultSubmitButtonText;
+                    button.classList.remove('btn_is-loading');
+                    jQuery.modal.close();
+                    jQuery('#success-modal-test').modal();
+                }
+            }, error => console.log(new Error(error)));
+            break;
+        case 1628:
+            sendPulseData = {
+                action: 'add_to_book',
+                id: 89086955,
+                email: inputs[0].value
+            }
+            jQuery.when(window.utils.ajaxRequest(sendPulseData)).then((resp) => {
+                const respObject = JSON.parse(resp);
+                if (respObject.result) {
+                    //Yandex conversion
+                    // ym(49171171, 'reachGoal', 'emailsub');
+                    // ga('send', 'event', { eventCategory: 'emailbutton', eventAction: 'click'});
+                    // gtag('event', 'success', {'send_to': 'analytics','event_category': 'emailbutton'});
+                    // gtag('event', 'conversion', {'event_category' : 'emailbutton', eventAction: 'click'});
+                    target.querySelector('.form__input').classList.remove('form__input_filled');
+                    target.querySelector('.form__label').classList.remove('form__label_active');
+                    button.textContent = defaultSubmitButtonText;
+                    button.classList.remove('btn_is-loading');
+                    jQuery('#success-modal-third').modal();
+                }
+            }, error => console.log(new Error(error)));
+            break;
+        case 779:
+            crmObject = new amoCRMInsance(779, inputs, 'call');
+            requestData = crmObject.getRequestObject();
+            jQuery.when(window.utils.ajaxRequest(requestData)).then(() => {
+                button.textContent = defaultSubmitButtonText;
+                button.classList.remove('btn_is-loading');
+                jQuery.modal.close();
+                jQuery('#success-modal-second').modal();
+            }, error => console.log(new Error(error)));
+            break;
+        case 1839:
+            crmObject = new amoCRMInsance(1839, inputs, 'intensive');
+            requestData = crmObject.getRequestObject();
+            jQuery.when(window.utils.ajaxRequest(requestData)).then(() => {
+                ga('send', { hitType: 'event', eventCategory: 'emailbutton', eventAction: 'click' });
+                button.textContent = defaultSubmitButtonText;
+                button.classList.remove('btn_is-loading');
+                jQuery.modal.close();
+                jQuery('#success-modal-first').modal();
+            }, error => console.log(new Error(error)));
+            break;
+        case 1805:
+            button.textContent = defaultSubmitButtonText;
+            button.classList.remove('btn_is-loading');
+            jQuery.modal.close();
+            jQuery('#success-modal-second').modal();
+            break;
+    }
 }
 function pageNavigationLinkHandler(event) {
-	const target = event.target;
-	const activeClass = 'page-navigation__link_state-active';
+    const target = event.target;
+    const activeClass = 'page-navigation__link_state-active';
 
-	window.utils.removeClass(navigationLinksCollection, activeClass);
-	target.classList.add(activeClass);
+    window.utils.removeClass(navigationLinksCollection, activeClass);
+    target.classList.add(activeClass);
 }
 function paymentInputsHandler(event) {
-	const target = event.target;
-	const targetName = target.name;
+    const target = event.target;
+    const targetName = target.name;
 
-	if (targetName === 'total' || targetName === 'wsb_total') {
-		const saleInput = target.closest('.form').querySelector('input[name="sale"]');
-		if (saleInput) {
-			saleInput.checked = false;
-		}
-		paymentInstance.setTotalPrice(target.value);
-		paymentInstance.changeCurenciesPrice(paymentMethodInstance.getPaymentMethodIndex());
-	}
+    if (targetName === 'total' || targetName === 'wsb_total') {
+        const saleInput = target.closest('.form').querySelector('input[name="sale"]');
+        if (saleInput) {
+            saleInput.checked = false;
+        }
+        paymentInstance.setTotalPrice(target.value);
+        paymentInstance.changeCurenciesPrice(paymentMethodInstance.getPaymentMethodIndex());
+    }
 }
 function initItiPlugin() {
-	const telInputs = document.querySelectorAll('input[type="tel"]');
+    const telInputs = document.querySelectorAll('input[type="tel"]');
 
-	for (const input of telInputs) {
-		if (!input.closest('.modal')) {
-			itiInstance.init(input);
-			input.addEventListener('countrychange', onItiCountyChangeHandler);
-		}
-	}
+    for (const input of telInputs) {
+        if (!input.closest('.modal')) {
+            itiInstance.init(input);
+            input.addEventListener("countrychange", onItiCountyChangeHandler);
+        }
+    }
 }
 function initSwiperInstance(swiperInstance, swiperInstanceOptionsData) {
-	if (typeof swiperInstance === `object`) {
-		const swiperInstances = Array.from(swiperInstance);
+    if (typeof swiperInstance === `object`) {
+        const swiperInstances = Array.from(swiperInstance);
 
-		swiperInstances.forEach((swiperInstanceItem, index) => {
-			swiperInstanceItem.classList.add(`inner-carousel-instance-${index}`);
-			new Swiper(`.inner-carousel-instance-${index}`, {
-				pagination: {
-					el: swiperInstanceItem.nextElementSibling,
-					type: 'bullets'
-				},
-				effect: 'fade',
-				fadeEffect: {
-					crossFade: true
-				},
-				navigation: {
-					prevEl: swiperInstanceItem.parentElement.querySelector(`.inner-carousel__btn-prev`),
-					nextEl: swiperInstanceItem.parentElement.querySelector(`.inner-carousel__btn-next`)
-				}
-			});
-		});
+            swiperInstances.forEach((swiperInstanceItem, index) => {
+                swiperInstanceItem.classList.add(`inner-carousel-instance-${index}`);
+                new Swiper(`.inner-carousel-instance-${index}`, {
+                    pagination: {
+                        el: swiperInstanceItem.nextElementSibling,
+                        type: 'bullets'
+                    },
+                    effect: 'fade',
+                    fadeEffect: {
+                        crossFade: true
+                    },
+                    navigation: {
+                        prevEl: swiperInstanceItem.parentElement.querySelector(`.inner-carousel__btn-prev`),
+                        nextEl: swiperInstanceItem.parentElement.querySelector(`.inner-carousel__btn-next`)
+                    }
+                });
+            });
 
-		return;
-	}
-	if (swiperInstance) {
-		const swiperInstanceContainer = document.querySelector(swiperInstance);
-
-		if (swiperInstanceContainer) {
-			return new Swiper(swiperInstanceContainer, swiperInstanceOptionsData);
-		}
-	}
+        return;
+    }
+    if (swiperInstance) {
+        const swiperInstanceContainer = document.querySelector(swiperInstance);
+    
+        if (swiperInstanceContainer) {
+            return new Swiper(swiperInstanceContainer, swiperInstanceOptionsData);
+        }
+    }
 }
 
 //Event handlers
 function onPortfolioLoadMoreButtonClickHandler() {
-	const portfolioLoadMoreButtonLocation = portfolioLoadMoreButton.dataset.location;
-	const maxLoadPages = +portfolioLoadMoreButton.dataset.maxPages;
-	const portfolioListContainer = portfolioLoadMoreButton.closest(`.portfolio`).querySelector(`.portfolio__list`);
-	const portfolioLoadMoreRequestData = {
-		action: 'portfolio',
-		currentPage: currentPage
-	};
-	const portfolioLoadMorebeforeRequestHandler = function() {
-		portfolioLoadMoreButton
-			.closest(`.portfolio`)
-			.querySelector(`.portfolio__list`)
-			.classList.add('portfolio__list_state-is-loading');
-		portfolioLoadMoreButton.classList.add('ajax-btn_state-is-loading');
-	};
+    const portfolioLoadMoreButtonLocation = portfolioLoadMoreButton.dataset.location;
+    const maxLoadPages = +portfolioLoadMoreButton.dataset.maxPages;
+    const portfolioListContainer = portfolioLoadMoreButton.closest(`.portfolio`).querySelector(`.portfolio__list`);
+    const portfolioLoadMoreRequestData = {
+        action: 'portfolio',
+        currentPage: currentPage
+    };
+    const portfolioLoadMorebeforeRequestHandler = function() {
+        portfolioLoadMoreButton.closest(`.portfolio`).querySelector(`.portfolio__list`).classList.add('portfolio__list_state-is-loading');
+        portfolioLoadMoreButton.classList.add('ajax-btn_state-is-loading');
+    };
 
-	if (portfolioLoadMoreButtonLocation === `post`) {
-		const portfolioLoadMoreButtonPostTag = portfolioLoadMoreButton.dataset.postTag;
-		portfolioLoadMoreRequestData.action = portfolioLoadMoreButtonLocation + '_portfolio';
-		portfolioLoadMoreRequestData.tag = portfolioLoadMoreButtonPostTag;
-	}
+    if (portfolioLoadMoreButtonLocation === `post`) {
+        const portfolioLoadMoreButtonPostTag = portfolioLoadMoreButton.dataset.postTag;
+        portfolioLoadMoreRequestData.action = portfolioLoadMoreButtonLocation + '_portfolio';
+        portfolioLoadMoreRequestData.tag = portfolioLoadMoreButtonPostTag;
+    }
 
-	jQuery
-		.when(
-			globalUtils.ajaxRequest(
-				portfolioLoadMoreRequestData,
-				portfolioLoadMorebeforeRequestHandler,
-				portfolioLoadMoreButton
-			)
-		)
-		.then(
-			(resp) => {
-				setTimeout(() => {
-					portfolioListContainer.insertAdjacentHTML('beforeEnd', resp);
-					portfolioListContainer.classList.remove('portfolio__list_state-is-loading');
-					portfolioLoadMoreButton.classList.remove('ajax-btn_state-is-loading');
-					currentPage++;
-					if (currentPage === maxLoadPages) {
-						portfolioLoadMoreButton.classList.add('portfolio__btn_disabled');
-					}
-				}, 250);
-			},
-			(error) => {
-				console.log(new Error(error));
-			}
-		);
+    jQuery.when(globalUtils.ajaxRequest(portfolioLoadMoreRequestData, portfolioLoadMorebeforeRequestHandler, portfolioLoadMoreButton)).then(
+        resp => {
+            setTimeout(() => {
+                portfolioListContainer.insertAdjacentHTML('beforeEnd', resp);
+                portfolioListContainer.classList.remove('portfolio__list_state-is-loading');
+                portfolioLoadMoreButton.classList.remove('ajax-btn_state-is-loading');
+                currentPage++;
+                if (currentPage === maxLoadPages) {
+                    portfolioLoadMoreButton.classList.add('portfolio__btn_disabled');
+                }
+            }, 250);
+        },
+        error => {
+            console.log(new Error(error));
+        }
+    );
 }
 function onCoursesTabsButtonsClickHandler(evt) {
-	const target = evt.target;
-	dataCurrentPageValue = 1;
-	const coursesCategoryId = target.dataset.id.split(`,`);
-	const coursesListGrid = target.parentElement.nextElementSibling;
-	const coursesListContainer = coursesListGrid.querySelector(`.course-list__wrapper`);
-	const isShowFull = target.dataset.showFull;
-	const showMoreCoursesButton = coursesListGrid.querySelector(`.course-list__more-btn`);
-	const showMoreCoursesButtonContainer = showMoreCoursesButton ? showMoreCoursesButton.parentElement : null;
-	const coursesRequestData = {
-		action: `tabs`,
-		id: coursesCategoryId,
-		showTestPost: false
-	};
-	const beforeSendHandler = function() {
-		const el = target.parentElement.nextElementSibling;
-		el.classList.add(`course-list__grid_state-is-loading`);
-	};
+    const target = evt.target;
+    dataCurrentPageValue = 1;
+    const coursesCategoryId = target.dataset.id.split(`,`);
+    const coursesListGrid = target.parentElement.nextElementSibling;
+    const coursesListContainer = coursesListGrid.querySelector(`.course-list__wrapper`);
+    const isShowFull = target.dataset.showFull;
+    const showMoreCoursesButton = coursesListGrid.querySelector(`.course-list__more-btn`);
+    const showMoreCoursesButtonContainer = showMoreCoursesButton ? showMoreCoursesButton.parentElement : null;
+    const coursesRequestData = {
+        action: `tabs`,
+        id: coursesCategoryId,
+        showTestPost: false
+    }
+    const beforeSendHandler = function () {
+        const el = target.parentElement.nextElementSibling;
+        el.classList.add(`course-list__grid_state-is-loading`);
+    }
 
-	if (isShowFull) {
-		coursesRequestData.showFullPosts = true;
-	}
+    if (isShowFull) {
+        coursesRequestData.showFullPosts = true;
+    }
 
-	globalUtils.removeClass(coursesTabsButtons, `tabs__btn_active`);
-	target.classList.add(`tabs__btn_active`);
-	jQuery.when(globalUtils.ajaxRequest(coursesRequestData, beforeSendHandler, target)).then(
-		(resp) => {
-			setTimeout(function() {
-				coursesListGrid.classList.remove(`course-list__grid_state-is-loading`);
-				coursesListContainer.innerHTML = ``;
-				coursesListContainer.insertAdjacentHTML(`afterBegin`, resp);
-				if (!isShowFull) {
-					dataMaxPagesValue = +coursesListContainer.querySelector(`.course-list__row_first`).dataset
-						.maxNumPages;
-					if (dataCurrentPageValue === dataMaxPagesValue) {
-						showMoreCoursesButton.classList.add(`course-list__more-btn_disabled`);
-						showMoreCoursesButtonContainer.classList.add(`course-list__footer_state-disabled`);
-					} else {
-						showMoreCoursesButton.classList.remove(`course-list__more-btn_disabled`);
-						showMoreCoursesButtonContainer.classList.remove(`course-list__footer_state-disabled`);
-					}
-				}
-			}, 250);
-		},
-		(error) => console.log(new Error(error))
-	);
+    globalUtils.removeClass(coursesTabsButtons, `tabs__btn_active`);
+    target.classList.add(`tabs__btn_active`);
+    jQuery.when(globalUtils.ajaxRequest(coursesRequestData, beforeSendHandler, target)).then(resp => {
+        setTimeout(function () {
+            coursesListGrid.classList.remove(`course-list__grid_state-is-loading`);
+            coursesListContainer.innerHTML = ``;
+            coursesListContainer.insertAdjacentHTML(`afterBegin`, resp);
+            if (!isShowFull) {
+                dataMaxPagesValue = +coursesListContainer.querySelector(`.course-list__row_first`).dataset.maxNumPages;
+                if (dataCurrentPageValue === dataMaxPagesValue) {
+                    showMoreCoursesButton.classList.add(`course-list__more-btn_disabled`);
+                    showMoreCoursesButtonContainer.classList.add(`course-list__footer_state-disabled`);
+                } else {
+                    showMoreCoursesButton.classList.remove(`course-list__more-btn_disabled`);
+                    showMoreCoursesButtonContainer.classList.remove(`course-list__footer_state-disabled`);
+                }
+            }
+        }, 250);
+    }, error => console.log(new Error(error)));
 }
 function onPaymentPageClickHandler(evt) {
-	const target = evt.target;
+    const target = evt.target;
 
-	if (target.matches(`input[name="sale"]`)) {
-		const paymentMethodIndex = paymentMethodInstance.getPaymentMethodIndex();
-		if (target.checked) {
-			paymentInstance.changeInputPrice(paymentMethodIndex, true);
-			return;
-		}
-		paymentInstance.updatePrices(paymentMethodIndex, true);
-		paymentInstance.changeInputPrice(paymentMethodIndex);
-	}
+    if (target.matches(`input[name="sale"]`)) {
+        const paymentMethodIndex = paymentMethodInstance.getPaymentMethodIndex();
+        if (target.checked) {
+            paymentInstance.changeInputPrice(paymentMethodIndex, true);
+            return;
+        }
+        paymentInstance.updatePrices(paymentMethodIndex, true);
+        paymentInstance.changeInputPrice(paymentMethodIndex);
+    }
 }
 function onMobileOptionsMenuOpenButtonClickHandler() {
-	const mobileMenuEl = document.querySelector('.m-menu');
-	const scrollBarWidth = getScrollbarWidth();
-	mobileMenuEl.classList.add('m-menu_opened');
-	document.body.style.paddingRight = scrollBarWidth;
-	document.documentElement.classList.add('is-locked');
+    const mobileMenuEl = document.querySelector('.m-menu');
+    const scrollBarWidth = getScrollbarWidth();
+    mobileMenuEl.classList.add('m-menu_opened');
+    document.body.style.paddingRight = scrollBarWidth;
+    document.documentElement.classList.add('is-locked');
 }
 function onMobileOptionsMenuCloseButtonClickHandler() {
-	const mobileMenuEl = document.querySelector('.m-menu');
-	mobileMenuEl.classList.remove('m-menu_opened');
-	document.body.style.paddingRight = 0;
-	document.documentElement.classList.remove('is-locked');
+    const mobileMenuEl = document.querySelector('.m-menu');
+    mobileMenuEl.classList.remove('m-menu_opened');
+    document.body.style.paddingRight = 0;
+    document.documentElement.classList.remove('is-locked');
 }
 function onPageTemplateContainerClickHandler(evt) {
-	const target = evt.target;
-	if (target.matches(`.content-list__title`)) {
-		target.classList.toggle('content-list__title_active');
-		target.nextElementSibling.classList.toggle('content-list__text_state-actived');
-	}
+    const target = evt.target;
+    if (target.matches(`.content-list__title`)) {
+        
+        target.classList.toggle('content-list__title_active');
+        target.nextElementSibling.classList.toggle('content-list__text_state-actived');
+    }
 }
 function onContactPageInfoContainerClickHandler(evt) {
-	const target = evt.target;
+    const target = evt.target;
 
-	if (target.matches(`.contact-page__info-item`)) {
-		const contactPageAdresses = document.querySelectorAll(`.contact-page__info-item`);
-		jQuery('body, html').animate(
-			{
-				scrollTop: jQuery('#map-anchor').offset().top
-			},
-			800
-		);
-		globalUtils.removeClass(contactPageAdresses, `contact-page__info-item_active`);
-		target.classList.add(`contact-page__info-item_active`);
-	}
+    if (target.matches(`.contact-page__info-item`)) {
+        const contactPageAdresses = document.querySelectorAll(`.contact-page__info-item`);
+        jQuery('body, html').animate({
+            scrollTop: jQuery('#map-anchor').offset().top
+        }, 800);
+        globalUtils.removeClass(contactPageAdresses, `contact-page__info-item_active`);
+        target.classList.add(`contact-page__info-item_active`);
+    }
 }
 function onSortNavigationContainerClickHandler(evt) {
-	const target = evt.target;
+    const target = evt.target;
 
-	if (target.matches('.sort-navigation__button')) {
-		const sortValue = target.dataset.sort;
-		globalUtils.removeClass(sortNavigationButtons, 'sort-navigation__button_state-active');
-		globalUtils.removeClass(sortListContainer.children, 'd-none');
-		target.classList.add('sort-navigation__button_state-active');
+    if (target.matches('.sort-navigation__button')) {
+        const sortValue = target.dataset.sort;
+        globalUtils.removeClass(sortNavigationButtons, 'sort-navigation__button_state-active');
+        globalUtils.removeClass(sortListContainer.children, 'd-none');
+        target.classList.add('sort-navigation__button_state-active');
 
-		if (sortValue !== 'all') {
-			for (let sortListContainerElement of sortListContainer.children) {
-				let tagValues = sortListContainerElement.dataset.tag;
-				if (!tagValues.split(', ').includes(sortValue)) {
-					sortListContainerElement.classList.add('d-none');
-				}
-			}
-		}
-	}
+        if (sortValue !== 'all') {
+            for (let sortListContainerElement of sortListContainer.children) {
+                let tagValues = sortListContainerElement.dataset.tag;
+                if (!tagValues.split(', ').includes(sortValue)) {
+                    sortListContainerElement.classList.add('d-none');
+                }
+            }
+        }
+    }
 }
 function onItiCountyChangeHandler(evt) {
-	const target = evt.target;
-	const form = target.closest('.wpcf7-form') || target.closest('.form');
-	const code = form.querySelector('.iti__selected-dial-code').textContent;
-	const hiddenInput = form.querySelector('input[name="ums-country-code"]');
-	hiddenInput.value = code;
+    const target = evt.target;
+    const form = target.closest('.wpcf7-form') || target.closest('.form');
+    const code = form.querySelector('.iti__selected-dial-code').textContent;
+    const hiddenInput = form.querySelector('input[name="ums-country-code"]');
+    hiddenInput.value = code;
 }
 function onTextareaElementClickHandler(evt) {
-	const target = evt.target;
+    const target = evt.target;
 
-	target.classList.toggle(`form__textarea-btn_active`);
-	target.nextElementSibling.lastElementChild.classList.toggle(`form__textarea_visibility-hide`);
+    target.classList.toggle(`form__textarea-btn_active`);
+    target.nextElementSibling.lastElementChild.classList.toggle(`form__textarea_visibility-hide`);
 }
 function onModalOpenHandler(evt) {
-	const modal = evt.target;
-	const input = modal.querySelector('input[type="tel"]');
+    const modal = evt.target;
+    const input = modal.querySelector('input[type="tel"]');
 
-	if (input) {
-		itiInstance.init(input);
-		input.addEventListener('countrychange', onItiCountyChangeHandler);
-	}
+    if (input) {
+        itiInstance.init(input);
+        input.addEventListener("countrychange", onItiCountyChangeHandler);
+    }
 
-	if (modal.classList.contains(`order-modal`)) {
-		const textareaElement = modal.querySelector(`.form__textarea-btn`);
-		textareaElement.addEventListener(`click`, onTextareaElementClickHandler);
-	}
+    if (modal.classList.contains(`order-modal`)) {
+        const textareaElement = modal.querySelector(`.form__textarea-btn`);
+        textareaElement.addEventListener(`click`, onTextareaElementClickHandler);
+    }
 }
 function onModalCloseHandler(evt) {
-	const target = evt.target;
-	const input = target.querySelector('input[type="tel"]');
+    const target = evt.target;
+    const input = target.querySelector('input[type="tel"]');
 
-	if (input) {
-		const instance = window.intlTelInputGlobals.getInstance(input);
-		instance.destroy();
-	}
+    if (input) {
+        const instance = window.intlTelInputGlobals.getInstance(input);
+        instance.destroy();
+    }
 
-	if (target.classList.contains(`order-modal`)) {
-		const textareaElement = target.querySelector(`.form__textarea-btn`);
-		textareaElement.removeEventListener(`click`, onTextareaElementClickHandler);
-	}
+    if (target.classList.contains(`order-modal`)) {
+        const textareaElement = target.querySelector(`.form__textarea-btn`);
+        textareaElement.removeEventListener(`click`, onTextareaElementClickHandler);
+    }
 }
 function onTestBtnClickHandler() {
-	const testData = {
-		action: 'lt'
-	};
-	jQuery.when(
-		globalUtils.ajaxRequest(testData).then(
-			(resp) => {
-				console.log(resp);
-				alert(resp);
-			},
-			(error) => {
-				console.log(error);
-				alert(error);
-			}
-		)
-	);
-}
-
-function onManualInputContainerInputHandler(evt) {
-	const target = evt.target;
-	paymentInstance.setTotalPrice(+target.value);
+    const testData = {
+        action: 'lt'
+    };
+    jQuery.when(globalUtils.ajaxRequest(testData).then(
+        resp => {
+            console.log(resp);
+            alert(resp);
+        },
+        error => {
+            console.log(error);
+            alert(error);
+        }
+    ));
 }
 
 // Подгружаем необходимые модули
@@ -1913,7 +1743,7 @@ let dataCurrentPageValue = 1;
 let dataMaxPagesValue;
 let currentPage = 1;
 if (document.querySelector('.course-list__row_first')) {
-	dataMaxPagesValue = +document.querySelector('.course-list__row_first').dataset.maxNumPages;
+    dataMaxPagesValue = +document.querySelector('.course-list__row_first').dataset.maxNumPages;
 }
 let deliveryElement = document.querySelector('select[name="delivery"]');
 let isCompleted = false;
@@ -1925,123 +1755,123 @@ const contactPageItems = document.querySelectorAll('.contact-page__info-item');
 const navigationLinksCollection = document.querySelectorAll('.page-navigation__link');
 const inputs = document.querySelectorAll('input');
 const selects = document.querySelectorAll('select');
-const testBtn = document.querySelector(`.test-btn`);
+const testBtn = document.querySelector(`.test-btn`)
 const weCarouselOptions = {
-	slidesPerView: 4,
-	spaceBetween: 30,
-	loop: true,
-	autoplay: {
-		delay: 5000
-	},
-	pagination: {
-		el: '.we__pagination',
-		type: 'bullets'
-	},
-	breakpoints: {
-		320: {
-			slidesPerView: 1,
-			spaceBetween: 0,
-			pagination: {
-				el: '.we__pagination',
-				type: 'bullets'
-			}
-		},
-		768: {
-			slidesPerView: 2,
-			spaceBetween: 30,
-			pagination: {
-				el: null
-			}
-		},
-		992: {
-			slidesPerView: 3,
-			spaceBetween: 30
-		},
-		1230: {
-			slidesPerView: 4
-		}
-	}
-};
+    slidesPerView: 4,
+    spaceBetween: 30,
+    loop: true,
+    autoplay: {
+        delay: 5000
+    },
+    pagination: {
+        el: '.we__pagination',
+        type: 'bullets'
+    },
+    breakpoints: {
+        320: {
+            slidesPerView: 1,
+            spaceBetween: 0,
+            pagination: {
+                el: '.we__pagination',
+                type: 'bullets'
+            }
+        },
+        768: {
+            slidesPerView: 2,
+            spaceBetween: 30,
+            pagination: {
+                el: null
+            }
+        },
+        992: {
+            slidesPerView: 3,
+            spaceBetween: 30
+        },
+        1230: {
+            slidesPerView: 4
+        }
+    }
+}
 const courseGalleryCarouselOptions = {
-	slidesPerView: 5,
-	loop: true,
-	autoplay: {
-		delay: 3000
-	},
-	navigation: {
-		prevEl: '.course-gallery__btn-prev',
-		nextEl: '.course-gallery__btn-next'
-	},
-	breakpoints: {
-		320: {
-			slidesPerView: 1
-		},
-		576: {
-			slidesPerView: 2
-		},
-		768: {
-			slidesPerView: 3
-		},
-		992: {
-			slidesPerView: 5
-		}
-	}
-};
+    slidesPerView: 5,
+    loop: true,
+    autoplay: {
+        delay: 3000
+    },
+    navigation: {
+        prevEl: '.course-gallery__btn-prev',
+        nextEl: '.course-gallery__btn-next'
+    },
+    breakpoints: {
+        320: {
+            slidesPerView: 1
+        },
+        576: {
+            slidesPerView: 2
+        },
+        768: {
+            slidesPerView: 3
+        },
+        992: {
+            slidesPerView: 5
+        }
+    }
+}
 const graduatesCarouselOptions = {
-	slidesPerView: `auto`,
-	spaceBetween: 25,
-	loop: true,
-	autoplay: {
-		delay: 3000
-	},
-	breakpoints: {
-		360: {
-			slidesPerView: 2
-		},
-		480: {
-			slidesPerView: 3
-		},
-		576: {
-			slidesPerView: 4
-		},
-		768: {
-			slidesPerView: `auto`
-		}
-	}
-};
+    slidesPerView: `auto`,
+    spaceBetween: 25,
+    loop: true,
+    autoplay: {
+        delay: 3000
+    },
+    breakpoints: {
+        360: {
+            slidesPerView: 2
+        },
+        480: {
+            slidesPerView: 3
+        },
+        576: {
+            slidesPerView: 4
+        },
+        768: {
+            slidesPerView: `auto`
+        }
+    }
+}
 const testimonialsCarouselOptions = {
-	effect: 'fade',
-	fadeEffect: {
-		crossFade: true
-	},
-	loop: true,
-	autoplay: {
-		delay: 5000
-	},
-	navigation: {
-		nextEl: '.testimonials__btn-next',
-		prevEl: '.testimonials__btn-prev'
-	},
-	pagination: {
-		el: '.testimonials__pagination',
-		type: 'bullets',
-		clickable: true
-	}
-};
+    effect: 'fade',
+    fadeEffect: {
+        crossFade: true
+    },
+    loop: true,
+    autoplay: {
+        delay: 5000
+    },
+    navigation: {
+        nextEl: '.testimonials__btn-next',
+        prevEl: '.testimonials__btn-prev',
+    },
+    pagination: {
+        el: '.testimonials__pagination',
+        type: 'bullets',
+        clickable: true
+    }
+}
 const innerCarouselOptions = {
-	pagination: {
-		el: '.inner-carousel__pagination',
-		type: 'bullets'
-	},
-	effect: 'fade',
-	fadeEffect: {
-		crossFade: true
-	},
-	navigation: {
-		prevEl: '.inner-carousel__btn-prev',
-		nextEl: '.inner-carousel__btn-next'
-	}
-};
+    pagination: {
+        el: '.inner-carousel__pagination',
+        type: 'bullets'
+    },
+    effect: 'fade',
+    fadeEffect: {
+        crossFade: true
+    },
+    navigation: {
+        prevEl: '.inner-carousel__btn-prev',
+        nextEl: '.inner-carousel__btn-next'
+    }
+}
 const portfolioLoadMoreButton = document.querySelector(`.portfolio__btn`);
 const coursesTabsButtonsContainer = document.querySelector(`.tabs`);
 const coursesTabsButtons = document.querySelectorAll(`.tabs__btn`);
@@ -2055,429 +1885,310 @@ const sortNavigationButtons = document.querySelectorAll(`.sort-navigation__butto
 const sortListContainer = document.querySelector(`.sort-list`);
 const innerCarouselElements = document.querySelectorAll(`.inner-carousel__grid`);
 const selectCourseBox = document.querySelector(`.ums-select`);
-const manualInputContainer = document.querySelector(`input[name="manual-price"]`);
 
 document.addEventListener(`DOMContentLoaded`, () => {
-	initInputListener();
-	initItiPlugin();
-	changeLayout();
-	showPopup();
-	if (innerCarouselElements.length) {
-		initSwiperInstance(innerCarouselElements, innerCarouselOptions);
-	}
-	initSwiperInstance(`.we__carousel`, weCarouselOptions);
-	initSwiperInstance(`.course-gallery__grid`, courseGalleryCarouselOptions);
-	initSwiperInstance(`.graduates__carousel`, graduatesCarouselOptions);
-	initSwiperInstance(`.testimonials__carousel`, testimonialsCarouselOptions);
+    initInputListener();
+    initItiPlugin();
+    changeLayout();
+    showPopup();
+    if (innerCarouselElements.length) {
+        initSwiperInstance(innerCarouselElements, innerCarouselOptions);
+    }
+    initSwiperInstance(`.we__carousel`, weCarouselOptions);
+    initSwiperInstance(`.course-gallery__grid`, courseGalleryCarouselOptions);
+    initSwiperInstance(`.graduates__carousel`, graduatesCarouselOptions);
+    initSwiperInstance(`.testimonials__carousel`, testimonialsCarouselOptions);
 
-	// MANUAL PRICE LISTENER
-	if (manualInputContainer) {
-		manualInputContainer.addEventListener(`input`, onManualInputContainerInputHandler);
-	}
-	// Adds price per month
-	const elPricePerMonth = document.querySelector('.price-box__item-value .ums-currency__value');
-	if (elPricePerMonth) {
-		let coursePrice = document.querySelector('.price-box__item-value').innerText;
-		coursePrice = parseInt(coursePrice, 10);
+		// Adds price per month
+		const elPricePerMonth = document.querySelector('.price-box__item-value .ums-currency__value');
+        if (elPricePerMonth) {
+            let coursePrice = document.querySelector('.price-box__item-value').innerText;
+		    coursePrice = parseInt(coursePrice, 10);
+            const coursePricePerMonth = Math.round(coursePrice / 3);
+            elPricePerMonth.innerHTML = `&nbsp;≈&nbsp;${coursePricePerMonth} BYN в месяц`;
+        }
+		//
 
-		const coursePricePerMonth = Math.round(coursePrice / 3);
-
-		elPricePerMonth.innerHTML = `&nbsp;≈&nbsp;${coursePricePerMonth} BYN в месяц`;
-	}
-
-	if (portfolioLoadMoreButton) {
-		portfolioLoadMoreButton.addEventListener(`click`, onPortfolioLoadMoreButtonClickHandler);
-	}
-	if (coursesTabsButtonsContainer) {
-		coursesTabsButtonsContainer.addEventListener(`click`, onCoursesTabsButtonsClickHandler);
-	}
-	if (paymentPageContainer) {
-		paymentPageContainer.addEventListener(`click`, onPaymentPageClickHandler);
-	}
-	if (mobileOptionsMenuOpenButton) {
-		mobileOptionsMenuOpenButton.addEventListener(`click`, onMobileOptionsMenuOpenButtonClickHandler);
-	}
-	if (mobileOptionsMenuCloseButton) {
-		mobileOptionsMenuCloseButton.addEventListener(`click`, onMobileOptionsMenuCloseButtonClickHandler);
-	}
-	if (pageTemplateContainer) {
-		pageTemplateContainer.addEventListener(`click`, onPageTemplateContainerClickHandler);
-	}
-	if (contactPageInfoContainer) {
-		contactPageInfoContainer.addEventListener(`click`, onContactPageInfoContainerClickHandler);
-	}
-	if (sortNavigationContainer) {
-		sortNavigationContainer.addEventListener(`click`, onSortNavigationContainerClickHandler);
-	}
-	if (testBtn) {
-		testBtn.addEventListener(`click`, onTestBtnClickHandler);
-	}
-	addCustomEventHandler('wpcf7invalid', wpcf7Collection, wpcf7InvalidHandler);
-	addCustomEventHandler('wpcf7mailsent', wpcf7Collection, wpcf7SentHandler);
+    if (portfolioLoadMoreButton) {
+        portfolioLoadMoreButton.addEventListener(`click`, onPortfolioLoadMoreButtonClickHandler);
+    }
+    if (coursesTabsButtonsContainer) {
+        coursesTabsButtonsContainer.addEventListener(`click`, onCoursesTabsButtonsClickHandler);
+    }
+    if (paymentPageContainer) {
+        paymentPageContainer.addEventListener(`click`, onPaymentPageClickHandler);
+    }
+    if (mobileOptionsMenuOpenButton) {
+        mobileOptionsMenuOpenButton.addEventListener(`click`, onMobileOptionsMenuOpenButtonClickHandler);
+    }
+    if (mobileOptionsMenuCloseButton) {
+        mobileOptionsMenuCloseButton.addEventListener(`click`, onMobileOptionsMenuCloseButtonClickHandler);
+    }
+    if (pageTemplateContainer) {
+        pageTemplateContainer.addEventListener(`click`, onPageTemplateContainerClickHandler);
+    }
+    if (contactPageInfoContainer) {
+        contactPageInfoContainer.addEventListener(`click`, onContactPageInfoContainerClickHandler);
+    }
+    if (sortNavigationContainer) {
+        sortNavigationContainer.addEventListener(`click`, onSortNavigationContainerClickHandler);
+    }
+    if (testBtn) {
+        testBtn.addEventListener(`click`, onTestBtnClickHandler);
+    }
+    addCustomEventHandler('wpcf7invalid', wpcf7Collection, wpcf7InvalidHandler);
+    addCustomEventHandler('wpcf7mailsent', wpcf7Collection, wpcf7SentHandler);
 });
 
 //Events
 document.addEventListener('click', (evt) => {
-	const target = evt.target;
+    const target = evt.target;
 
-	if (target.dataset.modal) {
-		const modalId = target.dataset.modal;
+    if (target.dataset.modal) {
+        const modalId = target.dataset.modal;
 
-		if (modalId === '#personal-data-modal') {
-			const modalOptionsData = {
-				action: 'personal_data'
-			};
-			jQuery.when(window.utils.ajaxRequest(modalOptionsData)).then(
-				(resp) => {
-					const modalElement = document.querySelector('.personal-data-modal');
-					modalElement.insertAdjacentHTML('afterBegin', resp);
-					jQuery(modalElement).modal({
-						closeExisting: false
-					});
-				},
-				(error) => console.log(new Error(error))
-			);
-		}
-		jQuery(modalId).modal({
-			closeExisting: false
-		});
-	}
-	if (target.dataset.videoId) {
-		const videoId = target.dataset.videoId;
-		const videoLink = 'https://www.youtube.com/embed/' + videoId;
-		const videoModalElement = document.querySelector('.video-modal');
-		videoModalElement.querySelector('iframe').setAttribute('src', videoLink);
-		jQuery('.video-modal').modal({
-			closeExisting: false
-		});
-	}
-	if (target.matches('.wpcf7 button[type="submit"]')) {
-		defaultSubmitButtonText = target.textContent;
-		target.classList.add(`btn_is-loading`);
-		target.textContent = `Отправляем...`;
-	}
-	if (target.matches('.dropdown-course-info__lecturer')) {
-		const postId = target.dataset.postId;
-		const text = target.textContent;
-		const requestData = {
-			action: 'lecturer',
-			id: postId
-		};
-		const beforeSendHandler = function() {
-			target.style.opacity = 0.3;
-		};
-		target.textContent = 'Загружаем...';
-		jQuery.when(window.utils.ajaxRequest(requestData, beforeSendHandler, target)).then((response) => {
-			target.style.opacity = 1;
-			target.textContent = text;
-			document.querySelector('.dropdown-lecturer-modal').innerHTML = '';
-			document.querySelector('.dropdown-lecturer-modal').insertAdjacentHTML('afterBegin', response);
-			jQuery('.dropdown-lecturer-modal').modal();
-		});
-	}
-	if (target.matches(`.course-list__more-btn`)) {
-		const gridElement = target.parentElement.previousElementSibling;
-		const id = document.querySelector(`.tabs__btn_active`).dataset.id;
-		const data = {
-			action: `courses`,
-			id: +id,
-			current_page: dataCurrentPageValue
-		};
-		const beforeSendHandler = function() {
-			const el = target.parentElement.previousElementSibling;
-			el.classList.add('course-list__wrapper_state-is-loading');
-			target.classList.add('ajax-btn_state-is-loading');
-		};
+        if (modalId === '#personal-data-modal') {
+            const modalOptionsData = {
+                action: 'personal_data'
+            }
+            jQuery.when(window.utils.ajaxRequest(modalOptionsData)).then(resp => {
+                const modalElement = document.querySelector('.personal-data-modal');
+                modalElement.insertAdjacentHTML('afterBegin', resp);
+                jQuery(modalElement).modal({
+                    closeExisting: false
+                });
+            }, error => console.log(new Error(error)));
+        }
+        jQuery(modalId).modal({
+            closeExisting: false
+        });
+    }
+    if (target.dataset.videoId) {
+        const videoId = target.dataset.videoId;
+        const videoLink = 'https://www.youtube.com/embed/' + videoId;
+        const videoModalElement = document.querySelector('.video-modal');
+        videoModalElement.querySelector('iframe').setAttribute('src', videoLink);
+        jQuery('.video-modal').modal({
+            closeExisting: false
+        });
+    }
+    if (target.matches('.wpcf7 button[type="submit"]')) {
+        defaultSubmitButtonText = target.textContent;
+        target.classList.add(`btn_is-loading`);
+        target.textContent = `Отправляем...`;
+    } 
+    if (target.matches('.dropdown-course-info__lecturer')) {
+        const postId = target.dataset.postId;
+        const text = target.textContent;
+        const requestData = {
+            action: 'lecturer',
+            id: postId
+        }
+        const beforeSendHandler = function () {
+            target.style.opacity = .3;
+        }
+        target.textContent = 'Загружаем...';
+        jQuery.when(window.utils.ajaxRequest(requestData, beforeSendHandler, target)).then((response) => {
+            target.style.opacity = 1;
+            target.textContent = text;
+            document.querySelector('.dropdown-lecturer-modal').innerHTML = '';
+            document.querySelector('.dropdown-lecturer-modal').insertAdjacentHTML('afterBegin', response);
+            jQuery('.dropdown-lecturer-modal').modal();
+        });
+    }
+    if (target.matches(`.course-list__more-btn`)) {
+        const gridElement = target.parentElement.previousElementSibling;
+        const id = document.querySelector(`.tabs__btn_active`).dataset.id;
+        const data = {
+            action: `courses`,
+            id: +id,
+            current_page: dataCurrentPageValue
+        }
+        const beforeSendHandler = function () {
+            const el = target.parentElement.previousElementSibling;
+            el.classList.add('course-list__wrapper_state-is-loading');
+            target.classList.add('ajax-btn_state-is-loading');
+        }
 
-		jQuery.when(window.utils.ajaxRequest(data, beforeSendHandler, target)).then(
-			(resp) => {
-				setTimeout(function() {
-					document.querySelector('.course-list__wrapper').insertAdjacentHTML('beforeEnd', resp);
-					gridElement.classList.remove('course-list__wrapper_state-is-loading');
-					target.classList.remove('ajax-btn_state-is-loading');
-				}, 250);
-				dataCurrentPageValue += 1;
-				if (dataCurrentPageValue === dataMaxPagesValue) {
-					document.querySelector('.course-list__footer').classList.add('course-list__footer_state-disabled');
-					document.querySelector('.course-list__more-btn').classList.add('course-list__more-btn_disabled');
-				}
-			},
-			(error) => console.log(new Error(error))
-		);
-	}
-	if (target.matches('.course-list-item__select-name')) {
-		(function() {
-			const buttons = document.querySelectorAll('.course-list-item__select-name');
-			const dropdowns = document.querySelectorAll('.dropdown');
-			const activeClass = 'course-list-item__select-name_active';
-			const openClass = 'dropdown_opened';
+        jQuery.when(window.utils.ajaxRequest(data, beforeSendHandler, target)).then(resp => {
+            setTimeout(function () {
+                document.querySelector('.course-list__wrapper').insertAdjacentHTML('beforeEnd', resp);
+                gridElement.classList.remove('course-list__wrapper_state-is-loading');
+                target.classList.remove('ajax-btn_state-is-loading');
+            }, 250);
+            dataCurrentPageValue += 1;
+            if (dataCurrentPageValue === dataMaxPagesValue) {
+                document.querySelector('.course-list__footer').classList.add('course-list__footer_state-disabled');
+                document.querySelector('.course-list__more-btn').classList.add('course-list__more-btn_disabled');
+            }
+        }, error => console.log(new Error(error)));
+    }
+    if (target.matches('.course-list-item__select-name')) {
+        (function () {
+            const buttons = document.querySelectorAll('.course-list-item__select-name');
+            const dropdowns = document.querySelectorAll('.dropdown');
+            const activeClass = 'course-list-item__select-name_active';
+            const openClass = 'dropdown_opened';
 
-			if (target.classList.contains(activeClass)) {
-				target.classList.remove(activeClass);
-				target.nextElementSibling.classList.remove(openClass);
-			} else {
-				window.utils.removeClass(buttons, activeClass);
-				window.utils.removeClass(dropdowns, openClass);
-				target.classList.add(activeClass);
-				target.nextElementSibling.classList.add(openClass);
-			}
-		})();
-	}
-	if (target.matches('.content-list__more-btn')) {
-		const contentListContainer = target.parentElement.previousElementSibling;
-		if (target.classList.contains('content-list__more-btn_open')) {
-			jQuery('html, body').animate(
-				{
-					scrollTop: jQuery('.faq__title').offset().top - 50
-				},
-				150
-			);
-			target.textContent = `Показать ещё`;
-			target.classList.remove('content-list__more-btn_open');
-			contentListContainer.classList.remove(`content-list__wrapper_open`);
-			return;
-		}
-		target.textContent = `Скрыть`;
-		target.classList.add('content-list__more-btn_open');
-		contentListContainer.classList.add(`content-list__wrapper_open`);
-	}
-	if (target.matches('.webpay-form__btn')) {
-		evt.preventDefault();
+            if (target.classList.contains(activeClass)) {
+                target.classList.remove(activeClass)
+                target.nextElementSibling.classList.remove(openClass);
+            } else {
+                window.utils.removeClass(buttons, activeClass);
+                window.utils.removeClass(dropdowns, openClass);
+                target.classList.add(activeClass);
+                target.nextElementSibling.classList.add(openClass);
+            }
+        })();
+    }
+    if (target.matches('.content-list__more-btn')) {
+        const contentListContainer = target.parentElement.previousElementSibling;
+        if (target.classList.contains('content-list__more-btn_open')) {
+            jQuery('html, body').animate({
+                scrollTop: jQuery('.faq__title').offset().top - 50
+            }, 150);
+            target.textContent = `Показать ещё`;
+            target.classList.remove('content-list__more-btn_open');
+            contentListContainer.classList.remove(`content-list__wrapper_open`);
+            return;
+        }
+        target.textContent = `Скрыть`;
+        target.classList.add('content-list__more-btn_open');
+        contentListContainer.classList.add(`content-list__wrapper_open`);
+    }
+    if (target.matches('.webpay-form__btn')) {
+        evt.preventDefault();
 
-		const buttonText = target.textContent;
-		target.textContent = 'Проверяем...';
-		target.style.opacity = 0.5;
-		const form = target.closest('.form');
-		const method = target.dataset.paymentMethod;
-		const inputs = form.querySelectorAll('input[required]');
-		const customer =
-			method === 'alfa'
-				? form.querySelector('input[name="name"]').value
-				: form.querySelector('input[name="wsb_customer_name"]').value;
-		let isValid;
-		let ajaxData = {
-			action: 'payment_' + method,
-			totalPrice: paymentInstance.getTotalPrice() * 100,
-			productName: paymentInstance.getCurrent(),
-			customerName: customer
-		};
+        const buttonText = target.textContent;
+        target.textContent = 'Проверяем...';
+        target.style.opacity = .5;
+        const form = target.closest('.form');
+        const method = target.dataset.paymentMethod;
+        const inputs = form.querySelectorAll('input[required]');
+        const customer = (method === 'alfa') ? form.querySelector('input[name="name"]').value : form.querySelector('input[name="wsb_customer_name"]').value;
+        let isValid;
+        let ajaxData = {
+            action: 'payment_' + method,
+            totalPrice: paymentInstance.getTotalPrice() * 100,
+            productName: paymentInstance.getCurrent(),
+            customerName: customer
+        }
 
-		for (let input of inputs) {
-			const value = input.value;
-			let label = input.nextElementSibling.nextElementSibling || input.nextElementSibling;
+        for (let input of inputs) {
+            const value = input.value;
+            const label = input.nextElementSibling.nextElementSibling;
 
-			if (!value) {
-				input.classList.add('wpcf7-not-valid');
-				label.classList.add('form__error-label_active');
-				isValid = false;
-				setTimeout(() => {
-					target.textContent = buttonText;
-					target.style.opacity = 1;
-				}, 300);
-				return;
-			} else {
-				input.classList.remove('wpcf7-not-valid');
-				label.classList.remove('form__error-label_active');
-				isValid = true;
-			}
-		}
+            if (!value) {
+                input.classList.add('wpcf7-not-valid');
+                label.classList.add('form__error-label_active');
+                isValid = false;
+                setTimeout(() => {
+                    target.textContent = buttonText;
+                    target.style.opacity = 1;
+                }, 300);
+                return;
+            } else {
+                input.classList.remove('wpcf7-not-valid');
+                label.classList.remove('form__error-label_active');
+                isValid = true;
+            }
+        }
 
-		if (isValid) {
-			inputs.forEach((item) => {
-				const label = item.nextElementSibling.nextElementSibling || item.nextElementSibling;
+        if (isValid) {
+            inputs.forEach(item => {
+                const label = item.nextElementSibling.nextElementSibling;
 
-				item.classList.remove('wpcf7-not-valid');
-				label.classList.remove('form__error-label_active');
-			});
-			if (paymentMethodInstance.getPaymentMethodIndex() !== 3) {
-				ajaxData.customerSaleType = paymentInstance.getSaleType();
-				ajaxData.customerSaleValue = paymentInstance.getSaleValue();
-			}
-			jQuery.ajax({
-				url: ajax.url,
-				type: 'POST',
-				dataType: 'json',
-				data: ajaxData,
-				beforeSend: function() {
-					target.style.opacity = 0.5;
-					target.textContent = 'Обрабатываем данные...';
-				},
-				success: function(response) {
-					// Yandex conversion
-					ym(49171171, 'reachGoal', 'payment');
-					target.textContent = 'Перенаправляем на оплату...';
-					if (paymentMethodInstance.getPaymentMethodIndex() === 1) {
-						setTimeout(function() {
-							document.location.replace(response.checkout.redirect_url);
-						}, 200);
-						return;
-					}
-					setTimeout(function() {
-						document.location.replace(response.formUrl);
-					}, 200);
-				}
-			});
-		}
-	}
-	if (
-		selectCourseBox &&
-		selectCourseBox.querySelector(`.ums-select__btn`).classList.contains(`ums-select__btn_state-active`) &&
-		!target.closest(`.ums-select`)
-	) {
-		selectCourseBox.querySelector(`.ums-select__btn`).classList.remove(`ums-select__btn_state-active`);
-		selectCourseBox.querySelector(`.ums-select__list`).classList.remove(`ums-select__list_visibility-open`);
-		selectCourseBox.closest(`.form__select`).classList.remove(`form__select_state-active`);
-	}
-	// ERIP
-	if (target.matches(`input[name="installment-school"]`)) {
-		const eripPaymentSaleField = document.querySelector(`input[name="sale-school"]`);
-		const eripPaymentPromocodeField = document.querySelector(`.promocode-input`);
-		if (target.checked) {
-			if (eripPaymentSaleField.checked) {
-				paymentInstance.updateEripPrice({}, true, true);
-			} else if (eripPaymentPromocodeField.classList.contains(`promocode-input_state-success`)) {
-				paymentInstance.updateEripPrice(window.promocodeData.value, false, true);
-			} else {
-				paymentInstance.updateEripPrice({}, false, true);
-			}
-		} else {
-			if (eripPaymentSaleField.checked) {
-				paymentInstance.updateEripPrice({}, true, false);
-			} else if (eripPaymentPromocodeField.classList.contains(`promocode-input_state-success`)) {
-				paymentInstance.updateEripPrice(window.promocodeData.value, false, false);
-			} else {
-				paymentInstance.updateEripPrice({}, false, false);
-			}
-		}
-	}
-	if (target.matches(`input[name="sale-school"]`)) {
-		const eripPaymentInstallmentField = document.querySelector(`input[name="installment-school"]`);
-		document.querySelector(`.b-promocode`).classList.toggle(`b-promocode_disabled`);
-		document.querySelector(`.erip-payment__message-note`).classList.toggle(`erip-payment__message-note_active`);
-		if (target.checked) {
-			if (eripPaymentInstallmentField.checked) {
-				paymentInstance.updateEripPrice({}, true, true);
-			} else {
-				paymentInstance.updateEripPrice({}, true, false);
-			}
-		} else {
-			if (eripPaymentInstallmentField.checked) {
-				paymentInstance.updateEripPrice({}, false, true);
-			} else {
-				paymentInstance.updateEripPrice({}, false, false);
-			}
-		}
-	}
-	// Костыль card-page
-	// if (target.matches(`input[name="card-installment-school"]`)) {
-	// 	const priceInputElement = document.querySelector('input[name="total"]');
-	// 	const textAfterInput = document.querySelector('.payment-form__price-value span');
-	// 	const paymentSaleField = document.querySelector('input[name="card-sale-school');
-
-	// 	if (target.checked) {
-	// 		const courseTypeButton = document.querySelector('.payment-form .ums-select__btn');
-
-	// 		if (priceInputElement.value === '0') {
-	// 			return;
-	// 		} else if (paymentSaleField.checked) {
-	// 			priceInputElement.value = courseTypeButton.dataset.salePrice;
-	// 			priceInputElement.nextElementSibling.innerHTML = '';
-	// 			const costPerMonth = (priceInputElement.value - priceInputElement.value * 0.1) / 3;
-	// 			priceInputElement.value = `${costPerMonth.toFixed(2)} BYN x 3 месяца`;
-	// 		} else {
-	// 			priceInputElement.value = courseTypeButton.dataset.salePrice;
-	// 			const costPerMonth = priceInputElement.value / 3;
-	// 			priceInputElement.value = `${costPerMonth.toFixed(2)} BYN x 3 месяца`;
-	// 		}
-	// 		textAfterInput.innerHTML = '';
-	// 		if (window.innerWidth <= 767) {
-	// 			priceInputElement.style.width = `${100}%`;
-	// 		} else {
-	// 			priceInputElement.style.width = `${450}px`;
-	// 		}
-	// 	} else {
-	// 		const courseTypeButton = document.querySelector('.payment-form .ums-select__btn');
-	// 		const oldPrice = courseTypeButton.dataset.salePrice;
-
-	// 		if (priceInputElement.value === '0') {
-	// 			return;
-	// 		} else if (paymentSaleField.checked) {
-	// 			const salePrice = courseTypeButton.dataset.salePrice - courseTypeButton.dataset.salePrice * 0.1;
-	// 			priceInputElement.nextElementSibling.innerHTML = 'BYN';
-	// 			priceInputElement.value = salePrice;
-	// 			claculatePriceLength(priceInputElement);
-	// 			textAfterInput.innerHTML = oldPrice;
-	// 		} else {
-	// 			priceInputElement.value = courseTypeButton.dataset.salePrice;
-	// 			claculatePriceLength(priceInputElement);
-	// 			textAfterInput.innerHTML = 'BYN';
-	// 		}
-	// 	}
-	// }
-	// Костыль card-page
-	// if (target.matches(`input[name="card-sale-school"]`)) {
-	// 	const priceInputElement = document.querySelector('input[name="total"]');
-	// 	document.querySelector(`.b-promocode`).classList.toggle(`b-promocode_disabled`);
-
-	// 	if (target.checked) {
-	// 		const courseTypeButton = document.querySelector('.payment-form .ums-select__btn');
-	// 		const paymentInstallmentField = document.querySelector(`input[name="card-installment-school"]`);
-
-	// 		if (priceInputElement.value === '0') {
-	// 			return;
-	// 		} else if (paymentInstallmentField.checked) {
-	// 			const salePrice = courseTypeButton.dataset.salePrice - courseTypeButton.dataset.salePrice * 0.1;
-	// 			priceInputElement.value = salePrice;
-	// 			const costPerMonth = priceInputElement.value / 3;
-	// 			priceInputElement.value = `${costPerMonth.toFixed(2)} BYN x 3 месяца`;
-	// 		} else {
-	// 			const salePrice = courseTypeButton.dataset.salePrice - courseTypeButton.dataset.salePrice * 0.1;
-	// 			const costPerMonth = salePrice;
-	// 			priceInputElement.value = `${costPerMonth}`;
-
-	// 			const priceWrapper = document.querySelector('.payment-form__price-value');
-	// 			const newEl = document.createElement('span');
-	// 			newEl.classList.add('payment-form__price-value-old');
-	// 			newEl.innerHTML = courseTypeButton.dataset.salePrice;
-	// 			newEl.style.marginRight = `8px`;
-	// 			priceWrapper.prepend(newEl);
-	// 		}
-	// 	} else {
-	// 		const courseTypeButton = document.querySelector('.payment-form .ums-select__btn');
-	// 		const paymentInstallmentField = document.querySelector(`input[name="card-installment-school"]`);
-
-	// 		if (priceInputElement.value === '0') {
-	// 			return;
-	// 		} else if (paymentInstallmentField.checked) {
-	// 			priceInputElement.value = courseTypeButton.dataset.salePrice;
-	// 			const costPerMonth = priceInputElement.value / 3;
-	// 			priceInputElement.value = `${costPerMonth.toFixed(2)} BYN x 3 месяца`;
-	// 		} else {
-	// 			priceInputElement.value = courseTypeButton.dataset.salePrice;
-	// 			claculatePriceLength(priceInputElement);
-
-	// 			const priceWrapper = document.querySelector('.payment-form__price-value');
-	// 			priceWrapper.removeChild(document.querySelector('.payment-form__price-value-old'));
-	// 		}
-	// 	}
-	// }
-	// Changes size of the input at payment-with-card page
-	// Костыль card-page
-	// if (target.matches(`.payment-form .ums-select__list-item`)) {
-	// 	const priceInputElement = document.querySelector('.payment-form input[name="total"]');
-	// 	const textAfterInput = document.querySelector('.payment-form__price-value span');
-
-	// 	if (priceInputElement) {
-	// 		claculatePriceLength(priceInputElement);
-	// 	}
-	// 	textAfterInput.innerHTML = 'BYN';
-	// }
-	//
-	// if (target.matches(`input[name="installment-length"]`)) {
-	// 	const installmentPaymentTermInput = document.querySelector(`input[name="installment-term"]`);
-	// 	installmentPaymentTermInput.value = target.value;
-	// 	paymentInstance.recalculateInstallmentPrice(+target.value);
-	// }
+                item.classList.remove('wpcf7-not-valid');
+                label.classList.remove('form__error-label_active');
+            });
+            if (paymentMethodInstance.getPaymentMethodIndex() !== 3) {
+                ajaxData.customerSaleType = paymentInstance.getSaleType();
+                ajaxData.customerSaleValue = paymentInstance.getSaleValue();
+            }
+            jQuery.ajax({
+                url: ajax.url,
+                type: 'POST',
+                dataType: 'json',
+                data: ajaxData,
+                beforeSend: function () {
+                    target.style.opacity = .5;
+                    target.textContent = 'Обрабатываем данные...';
+                },
+                success: function (response) {
+                    // Yandex conversion
+                    ym(49171171, 'reachGoal', 'payment');
+                    target.textContent = 'Перенаправляем на оплату...';
+                    if (paymentMethodInstance.getPaymentMethodIndex() === 1) {
+                        setTimeout(function () {
+                            document.location.replace(response.checkout.redirect_url);
+                        }, 200);
+                        return;
+                    }
+                    setTimeout(function () {
+                        document.location.replace(response.formUrl);
+                    }, 200);
+                }
+            });
+        }
+    }
+    if (selectCourseBox && selectCourseBox.querySelector(`.ums-select__btn`).classList.contains(`ums-select__btn_state-active`) && !target.closest(`.ums-select`)) {
+        selectCourseBox.querySelector(`.ums-select__btn`).classList.remove(`ums-select__btn_state-active`);
+        selectCourseBox.querySelector(`.ums-select__list`).classList.remove(`ums-select__list_visibility-open`);
+        selectCourseBox.closest(`.form__select`).classList.remove(`form__select_state-active`);
+    }
+    // ERIP
+    if (target.matches(`input[name="installment-school"]`)) {
+        const eripPaymentSaleField = document.querySelector(`input[name="sale-school"]`);
+        const eripPaymentPromocodeField = document.querySelector(`.promocode-input`);
+        if (target.checked) {
+            if (eripPaymentSaleField.checked) {
+                paymentInstance.updateEripPrice({}, true, true);
+            }
+            else if (eripPaymentPromocodeField.classList.contains(`promocode-input_state-success`)) {
+                paymentInstance.updateEripPrice(window.promocodeData.value, false, true);
+            }
+            else {
+                paymentInstance.updateEripPrice({}, false, true);
+            }
+        }
+        else {
+            if (eripPaymentSaleField.checked) {
+                paymentInstance.updateEripPrice({}, true, false);
+            }
+            else if (eripPaymentPromocodeField.classList.contains(`promocode-input_state-success`)) {
+                paymentInstance.updateEripPrice(window.promocodeData.value, false, false);
+            }
+            else {
+                paymentInstance.updateEripPrice({}, false, false);
+            }
+        }
+    }
+    if (target.matches(`input[name="sale-school"]`)) {
+        const eripPaymentInstallmentField = document.querySelector(`input[name="installment-school"]`);
+        document.querySelector(`.b-promocode`).classList.toggle(`b-promocode_disabled`);
+        document.querySelector(`.erip-payment__message-note`).classList.toggle(`erip-payment__message-note_active`);
+        if (target.checked) {
+            if (eripPaymentInstallmentField.checked) {
+                paymentInstance.updateEripPrice({}, true, true);
+            }
+            else {
+                paymentInstance.updateEripPrice({}, true, false)
+            }
+        }
+        else {
+            if (eripPaymentInstallmentField.checked) {
+                paymentInstance.updateEripPrice({}, false, true);
+            }
+            else {
+                paymentInstance.updateEripPrice({}, false, false);
+            }
+        }
+    }
+    if (target.matches(`input[name="installment-length"]`)) {
+        const installmentPaymentTermInput = document.querySelector(`input[name="installment-term"]`);
+        installmentPaymentTermInput.value = target.value;
+        paymentInstance.recalculateInstallmentPrice(+target.value);
+    }
 });
 
 jQuery('.modal').on('modal:open', onModalOpenHandler);
@@ -2488,33 +2199,28 @@ addCustomEventHandler('click', navigationLinksCollection, pageNavigationLinkHand
 addCustomEventHandler('input', inputs, paymentInputsHandler);
 addCustomEventHandler('change', selects, handleSelect);
 window.addEventListener('resize', () => {
-	changeLayout();
+    changeLayout();
 });
 window.addEventListener('scroll', () => {
-	if (mobileOptionsMenuOpenButton) {
-		if (pageYOffset >= 900) {
-			mobileOptionsMenuOpenButton.classList.add(`m-options__menu-btn_active`);
-			return;
-		}
-		mobileOptionsMenuOpenButton.classList.remove(`m-options__menu-btn_active`);
-	}
+    if (mobileOptionsMenuOpenButton) {
+        if (pageYOffset >= 900) {
+            mobileOptionsMenuOpenButton.classList.add(`m-options__menu-btn_active`);
+            return;
+        }
+        mobileOptionsMenuOpenButton.classList.remove(`m-options__menu-btn_active`);
+    }
 });
 document.body.addEventListener('mouseover', (evt) => {
-	const target = evt.target;
-	if (target.closest('svg') && target.closest('svg').classList.contains('info__icon') && window.innerWidth > 991) {
-		target.closest('svg').nextElementSibling.classList.add('info__content_opened');
-	}
+    const target = evt.target;
+    if (target.closest('svg') && target.closest('svg').classList.contains('info__icon') && window.innerWidth > 991) {
+        target.closest('svg').nextElementSibling.classList.add('info__content_opened');
+    }
 });
 document.body.addEventListener('mouseout', (evt) => {
-	const target = evt.target;
-	if (
-		target.closest('svg') &&
-		target.closest('svg').classList.contains('info__icon') &&
-		!event.relatedTarget.closest('svg') &&
-		window.innerWidth > 991
-	) {
-		target.closest('svg').nextElementSibling.classList.remove('info__content_opened');
-	}
+    const target = evt.target;
+    if (target.closest('svg') && target.closest('svg').classList.contains('info__icon') && !event.relatedTarget.closest('svg') && window.innerWidth > 991) {
+        target.closest('svg').nextElementSibling.classList.remove('info__content_opened');
+    }
 });
 
 // FANCY APP SETTINGS
@@ -2523,7 +2229,6 @@ document.body.addEventListener('mouseout', (evt) => {
 //         preload : true
 //     }
 // })
-
 (function() {
     const button = document.querySelector('.calculation__btn');
     const form = document.querySelector('#wpcf7-f1805-o1');
