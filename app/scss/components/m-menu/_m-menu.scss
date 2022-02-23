@@ -1,0 +1,99 @@
+.m-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    pointer-events: none;
+    background: linear-gradient(180deg, #33AAFF 0%, #8B24B7 127.5%);
+    padding: 0;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translate3d(-110%, 0, 0);
+    transition: transform .35s cubic-bezier(.81,1.22,1,.99);
+    z-index: 10;
+    &_opened {
+        transform: translate3d(0, 0, 0);
+        pointer-events: auto;
+    }
+    &__wrapper {
+        @include flex(column, stretch);
+        width: 100%;
+    }
+    &__header {
+        padding: 20px 0;
+    }
+    &__social {
+        justify-content: center;
+        margin-top: 15px;
+    }
+    &__logo {
+        display: block;
+        opacity: .7;
+    }
+    &__grid {
+        // margin-top: 40px;
+				margin-top: 20px;
+    }
+    &__footer {
+        margin-top: 30px;
+    }
+    &__options {
+        @include flex(row, center, flex-end);
+        margin-left: auto;
+        &-btn {
+            @include flex(row, center, center);
+            width: 30px;
+            height: 30px;
+            margin-right: 20px;
+            & svg {
+                pointer-events: none;
+            }
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+        &-close-btn {
+            background: icon('icon-menu-close.svg') no-repeat right center / 30px auto;
+        }
+    }
+    &__instagram-badge {
+        max-width: 330px;
+        margin: 0 auto;
+        margin-top: 20px;
+    }
+}
+
+.admin-bar {
+    & .m-menu {
+        top: 32px;
+    }
+}
+
+// MEDIA
+@media screen and (max-width: 1229px) {
+    .m-menu {
+        &__footer {
+            @include flex(column, center);
+        }
+				& .all-courses {
+					margin-top: 0;
+					left: 0;
+					top: 54px;
+					&__wrapper {
+							background: rgba($white, .15);
+					}
+					&__btn {
+						background: transparent;
+						border: 1px solid rgba($white, .15);
+					}
+			}
+    }
+}
+@media screen and (max-width: 991px) {
+    .m-menu {
+        &__header {
+            padding: 15px 0;
+        }
+    }
+}

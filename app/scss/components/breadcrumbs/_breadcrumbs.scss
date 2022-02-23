@@ -1,0 +1,80 @@
+.breadcrumbs {
+    @include flex(row, center);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    & a {
+        position: relative;
+        margin-right: 20px;
+        text-decoration: none;
+        font-size: 1.2rem;
+        color: $white;
+        line-height: 1.3;
+        &::after {
+            content: '';
+            @include flex(row, center, center);
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            left: calc(100% + 5px);
+            top: 3px;
+            background: icon('ums-icon-breadcrumbs.svg') no-repeat 50%;
+        }
+        &::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: rgba($white, .2);
+            top: calc(100% + 1px);
+            left: 0;
+        }
+        &:hover {
+            &::before {
+                background: rgba($white, .4);
+            }
+        }
+        &:active {
+            &::before {
+                background: rgba($white, .6);
+            }
+        }
+    }
+    & span {
+        text-decoration: none;
+        font-size: 1.2rem;
+        color: $white;
+        line-height: 1.3;
+        position: relative;
+    }
+    & svg {
+        margin: 0 10px;
+        flex-shrink: 0;
+    }
+    &_style {
+        &-dark {
+            & a {
+                color: $gray-500;
+                &::after {
+                    background: icon('ums-icon-breadcrumbs-dark.svg') no-repeat 50%;
+                }
+                &::before {
+                    background: rgba($gray-500, .3);
+                }
+                &:hover {
+                    &::before {
+                        background: $gray-200;
+                    }
+                }
+            }
+            & span {
+                color: $gray-500;
+            }
+            & svg {
+                & path {
+                    fill: $gray-500;
+                }
+            }
+        }
+    }
+}

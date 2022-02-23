@@ -1,0 +1,329 @@
+// Variables
+$course-hero-cover-image: 'course.svg';
+
+.course-template {
+    &__wrapper {
+        padding-bottom: 150px;
+        background: image(#{$course-hero-cover-image}) no-repeat center bottom / cover;
+        overflow: hidden;
+        &::before {
+            content: none;
+        }
+        &::after {
+            content: none;
+        }
+    }
+    &__certificate {
+        background: $primary-100;
+        overflow: hidden;
+    }
+    &__container {
+        position: relative;
+        z-index: 1;
+    }
+    &__breadcrumbs {
+        margin-bottom: 65px;
+    }
+}
+
+.course-btn {
+    @include flex(row, center, center);
+    text-decoration: none;
+    font-size: 2rem;
+    letter-spacing: -.01em;
+    line-height: 1.5;
+    padding: 0 30px;
+    height: 60px;
+    font-weight: 800;
+    background: $white;
+    color: $white;
+    border-radius: 30px;
+    margin-right: 10px;
+    background: linear-gradient(179.9deg, #FF8AF1 0.06%, #F149F8 46.65%, #E100FF 99.9%);
+    box-shadow: 0 1px 1px 0 rgba($shadow, .1), 0 20px 20px 0 rgba($shadow, .1);
+    &:last-child {
+        margin-right: 0;
+    }
+    &:hover {
+        box-shadow: 0 1px 1px 0 rgba($shadow, .1), 0 10px 10px 0 rgba($shadow, .1);
+    }
+    &:active {
+        box-shadow: 0 1px 1px 0 rgba($shadow, .1), 0 5px 5px 0 rgba($shadow, .1);
+    }
+    &:disabled {
+        opacity: .3;
+        pointer-events: none;
+    }
+    &_style {
+        &-1 {
+            background: rgba($white, .15);
+            color: $white;
+            &:hover {
+                background: rgba(white, .25);
+            }
+            &:active {
+                background: rgba($white, .35);
+                color: $white;
+            }
+        }
+    }
+}
+
+.about-course {
+    padding: 150px 0;
+    background: $primary-100;
+    position: relative;
+    padding-bottom: 30px;
+    &::after {
+        content: none;
+    }
+    &__title {
+        text-align: left;
+        margin-bottom: 20px;
+        margin-top: 30px;
+    }
+    &__info {
+        & p {
+            margin: 0;
+            letter-spacing: .01em;
+            font-size: 1.7rem;
+            line-height: 1.47;
+            margin-bottom: 20px;
+            color: $gray-500;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+    &__video {
+        position: relative;
+        width: 100%;
+        max-width: 630px;
+        height: 450px;
+        border-radius: map-get($border-radius, 'video');
+        background: image("about-course-video-bg.svg") no-repeat left bottom;
+        background-size: cover;
+        &-img {
+            width: 100%;
+            max-width: 500px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            margin-left: -250px;
+        }
+    }
+    &__play-btn {
+        position: absolute;
+        top: 30px;
+        left: 35px;
+        z-index: 1;
+    }
+    &__author {
+        text-align: center;
+        margin: 0;
+        color: $gray-200;
+        font-size: 1.5rem;
+        line-height: 1.3;
+        margin-top: 15px;
+    }
+}
+
+.for-whom {
+    padding-top: 70px;
+    margin-top: 95px;
+    border-top: 1px solid $primary-200;
+    &__title {
+        @include flex(column);
+        margin: 0;
+        text-align: left;
+        & svg {
+            margin-top: 20px;
+        }
+    }
+    &__icon {
+        @include flex(row, center, center);
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: $white;
+        box-shadow: 0 20px 20px 0 rgba(65, 1, 121, 0.05), 0 1px 1px 0 rgba(65, 1, 121, 0.1);
+    }
+    &__item {
+        @include flex(column, center);
+    }
+    &__name {
+        letter-spacing: -.03rem;
+        font-size: 2rem;
+        line-height: 1.5;
+        margin: 0;
+        margin-top: 15px;
+        color: $dark-200;
+        text-align: center;
+    }
+}
+
+.program {
+    position: relative;
+    padding: 120px 0;
+    padding-top: 260px;
+    background: $primary-100;
+    &_style {
+        &-no-bg {
+            background: $white;
+        }
+    }
+    &__figure {
+        height: 650px;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: image("ums-program-img.svg") no-repeat 50% / cover;
+        &_color {
+            &-white {
+                background: icon('ums-program-figure-vector-white.svg') no-repeat center bottom / 100% auto;
+            }
+        }
+        &::after {
+            content: none;
+        }
+    }
+    &__title {
+        color: $white;
+        margin-bottom: 40px;
+    }
+    &__container {
+        position: relative;
+        z-index: 5;
+    }
+}
+
+.process {
+    background: $primary-100;
+    padding-bottom: 100px;
+    &__title {
+        @include flex(column);
+        text-align: left;
+        margin-bottom: 20px;
+        & svg {
+            margin-top: 20px;
+        }
+    }
+    &__icon {
+        @include flex(row, center, center);
+        width: 100%;
+        height: 90px;
+        border-radius: 5px;
+        background: $white;
+        box-shadow: 0 20px 20px 0 rgba(65, 1, 121, 0.05), 0 1px 1px 0 rgba(65, 1, 121, 0.1);
+    }
+    &__name {
+        font-family: $font, sans-serif;
+        margin: 0;
+        font-size: 2rem;
+        font-weight: bold;
+        letter-spacing: -.03rem;
+        line-height: 1.5;
+        margin-top: 15px;
+    }
+    &__text {
+        margin: 0;
+        font-size: 1.5rem;
+        margin-top: 7px;
+        line-height: 1.3;
+        color: $dark-100;
+    }
+}
+
+.results {
+    padding: 120px 0;
+    &__title {
+        text-align: left;
+        margin: 0;
+    }
+    &__icon {
+        @include flex(row, center, center);
+        width: 100%;
+        height: 270px;
+        border-radius: 5px;
+        background: $primary-100;
+    }
+    &__name {
+        margin: 0;
+        font-size: 2rem;
+        line-height: 1.5;
+        letter-spacing: -.03rem;
+        margin-top: 15px;
+    }
+}
+
+.faq {
+    padding: 160px 0;
+    padding-bottom: 200px;
+    &__title {
+        text-align: left;
+        margin-bottom: 40px;
+    }
+    &__item {
+        &:nth-child(n+7) {
+            display: none;
+        }
+        &:nth-child(6) {
+            border-bottom: none;
+        }
+    }
+    &__video {
+        @include flex(column, flex-start, flex-end);
+        width: 100%;
+        height: 200px;
+        border-radius: 20px;
+        padding: 20px;
+        background-size: cover;
+        background-position: center top;
+        position: relative;
+        &::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            opacity: .7;
+            top: 0;
+            left: 0;
+            background: radial-gradient(32.82% 56.19% at 88.94% 100%, #5E1AE6 0%, rgba(139, 52, 165, 0) 100%), radial-gradient(28.41% 82.88% at 72.02% -14.43%, #FF66E6 0%, rgba(242, 13, 204, 0) 98.1%), radial-gradient(109.63% 150.89% at 17.11% 154.84%, #1AC4E6 15.06%, #1AA1E6 37.96%, rgba(188, 54, 199, 0) 100%), #B333CC;
+        }
+        &-btn {
+            @include flex(row, center);
+            font-size: 2rem;
+            line-height: 1.5;
+            letter-spacing: -.03rem;
+            color: $white;
+            position: relative;
+            z-index: 1;
+            &-icon {
+                @include flex(row, center, center);
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: $white;
+                position: relative;
+                box-shadow: 0 5px 40px 0 rgba(65, 1, 121, 0.05), 0px 1px 1px rgba(65, 1, 121, 0.1);
+                margin-right: 10px;
+                flex-shrink: 0;
+                & svg {
+                    position: relative;
+                    left: 1px;
+                }
+            }
+        }
+    }
+}
+
+// MEDIA
+@media screen and (max-width: 575px) {
+    .course-template {
+        &__wrapper {
+            padding-top: 70px;
+        }
+    }
+}

@@ -1,0 +1,34 @@
+.m-options {
+    @include flex(row, center, flex-end);
+    &__btn {
+        @include flex(row, center, center);
+        width: 30px;
+        height: 30px;
+        margin-right: 20px;
+        & svg {
+            pointer-events: none;
+        }
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+    &__phone-link {
+        background: icon('icon-phone.svg') no-repeat 50% / 30px auto;
+        &_style {
+            &-gradient {
+                background: icon('phone-icon-with-gradient.svg') no-repeat 50% / 21px auto;
+            }
+        }
+    }
+    &__menu-btn {
+        background: icon('icon-menu-open.svg') no-repeat right 50% / 30px auto;
+        &_style {
+            &-gradient {
+                background: icon('menu-icon-with-gradient.svg') no-repeat 50% / 24px auto;
+            }
+        }
+        &_active {
+            background: icon('menu-icon-active.svg') no-repeat right 50% / 24px auto;
+        }
+    }
+}

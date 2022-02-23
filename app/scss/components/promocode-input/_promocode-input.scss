@@ -1,0 +1,59 @@
+.promocode-input {
+    display: none;
+    position: relative;
+    &_state {
+        &-active {
+            display: block;
+            margin-top: 20px;
+        }
+        &-success {
+            & .form {
+                &__error {
+                    &-label {
+                        color: $green-100;
+                    }
+                }
+            }
+            & input {
+                border-color: $green-100;
+            }
+        }
+        &-error {
+            & .form {
+                &__error {
+                    &-label {
+                        color: red;
+                    }
+                }
+            }
+            & input {
+                border-color: red;
+            }
+        }
+        &-progress {
+            opacity: .5;
+            pointer-events: none;
+        }
+    }
+    &__btn {
+        @include flex(row, center, center);
+        position: absolute;
+        top: 1px;
+        right: 0;
+        height: calc(100% - 2px);
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        padding: 0 15px;
+        color: 1.7rem;
+        color: $gray-100;
+        @include font-weight('medium');
+        line-height: 1.3;
+        z-index: 1;
+        &:hover {
+            color: $gray-500;
+        }
+        &:active {
+            color: $gray-500;
+        }
+    }
+}

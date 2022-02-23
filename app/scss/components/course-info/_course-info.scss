@@ -1,0 +1,236 @@
+.course-info {
+    &__item {
+        @include flex(row, center);
+        margin-bottom: 10px;
+        &:last-child {
+            margin-bottom: 0;
+        }
+        &-name {
+            margin: 0;
+            color: rgba($white, .3);
+            font-size: 1.5rem;
+            line-height: 1.35;
+            width: 110px;
+        }
+        &-value {
+            @include flex(row, center);
+            margin: 0;
+            color: $white;
+            font-size: 1.5rem;
+            line-height: 1.3;
+        }
+        &-link {
+            text-decoration: none;
+            cursor: pointer;
+            color: $white;
+            font-size: 1.5rem;
+            line-height: 1.3;
+            &::before {
+                height: 1px;
+                background: transparent;
+                border-bottom: 1px dashed $white;
+            }
+            &:hover {
+                opacity: .8;
+                &::before {
+                    background: transparent;
+                }
+            }
+        }
+        &-info {
+            margin-left: 5px;
+        }
+        &-address-value {
+            display: block;
+        }
+        &-price {
+            flex: none;
+            display: block;
+            margin: 0;
+            font-weight: 800;
+            &-inner {
+                font-weight: normal;
+                text-decoration: line-through;
+            }
+            &-note {
+                display: block;
+                text-align: left;
+                font-size: 1.2rem;
+                line-height: 1.3;
+                width: 100%;
+                color: $white;
+            }
+        }
+        &-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            background: rgba($white, .15);
+            margin-top: 5px;
+            margin-right: 8px;
+            &:hover {
+                background: rgba($white, .2);
+            }
+            &::before {
+                content: none;
+            }
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+        &-wrapper {
+            @include flex(row, center, flex-start, wrap);
+            // margin-left: 10px;
+        }
+        &-currency-price {
+            color: $secondary-100;
+        }
+        &-note {
+            display: block;
+            font-size: 1.2rem;
+            line-height: 1.3;
+            color: $white;
+        }
+    }
+    &__select {
+        position: relative;
+        border: 1px solid rgba($white, .2);
+        border-radius: $br-course-info-select;
+        &::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: 5px;
+            top: 50%;
+            margin-top: -10px;
+            background: icon('ums-icon-down.svg') no-repeat 50% / 10px auto;
+        }
+        &::before {
+            content: none;
+        }
+        &:hover {
+            border-color: rgba($white, .5);
+        }
+        & select {
+            color: $white;
+            font-size: 1.5rem;
+            line-height: 1.3;
+            padding: 5px 10px;
+            padding-right: 30px;
+            position: relative;
+            z-index: 1;
+        }
+    }
+    &__options {
+        @include flex(row, center);
+        margin-top: 30px;
+        &-link {
+            text-decoration: none;
+            color: $white;
+            font-size: 1.5rem;
+            line-height: 1.3;
+            margin-left: 25px;
+        }
+    }
+    &__price-box {
+        max-width: 410px;
+        margin-top: 20px;
+        background: rgba($white, .15);
+        border-radius: 10px;
+    }
+}
+
+// MEDIA
+@media screen and (max-width: 991px) {
+    .course-info {
+        &__wrapper {
+            position: relative;
+            padding: 15px;
+            padding-bottom: 25px;
+            background: $white;
+            border-radius: $br-course-info-wrapper;
+        }
+        &__price-box {
+            margin-top: 10px;
+            padding: 15px;
+            padding-bottom: 20px;
+            border-radius: $br-course-info-wrapper;
+            background: $white;
+            max-width: none;
+        }
+		&__select {
+				border: 1px solid $gray-50;
+				position: relative;
+				&::after {
+						background: icon('blue-drop.svg') no-repeat 50%	/ cover;
+						right: 12px;
+				}
+				&:hover {
+						border: 1px solid $gray-50;
+				}
+				& select {
+						color: $gray-900;
+						padding: 8px 40px 8px 10px;
+				}
+				& .course-info__item-name {
+						font-size: 1.2rem;
+						line-height: 1.25;
+						position: absolute;
+						top: 5px;
+						left: 10px;
+				}
+		}
+        &__options {
+            flex-direction: column;
+            margin-top: 10px;
+            &-link {
+                margin: 0;
+                margin-top: 20px;
+            }
+        }
+        &__btn {
+            width: 100%;
+            border-radius: map-get($button-radius, 'mobile');
+            font-size: 2rem;
+            line-height: 1.5;
+            padding: .5em 0;
+        }
+        &__item {
+            margin-bottom: 15px;
+						&-price-note,
+						&-value {
+								color: $gray-900;
+								display: block;
+						}
+						&-link {
+								color: $primary-500;
+								&:before {
+										border-bottom: 1px dashed $primary-500;
+								}
+						}
+						&-name {
+								color: $gray-300;
+						}
+            &_sticky {
+                position: absolute;
+                top: 15px;
+                left: 140px;
+                padding-left: 50px;
+                border-left: 1px solid rgba($white, .15);
+            }
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+@media screen and (max-width: 575px) {
+    .course-info {
+        &__select {
+            width: 100%;
+            & select {
+                width: 100%;
+            }
+        }
+    }
+}

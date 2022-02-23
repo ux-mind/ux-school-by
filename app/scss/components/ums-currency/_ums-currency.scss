@@ -1,0 +1,55 @@
+.ums-currency {
+    @include flex(row, center);
+    &__value {
+        @include flex(row, center);
+        margin: 0;
+        color: rgba($white, .5);
+        font-size: 1.5rem;
+        line-height: 1.3;
+        &_color {
+            &-gray {
+                color: $gray-200;
+            }
+        }
+        &_bigger {
+            font-size: 2rem;
+            line-height: 1.35;
+            letter-spacing: -.01em;
+        }
+    }
+    &__symbol {
+        color: $dark;
+    }
+}
+
+.currency-input-wrapper {
+    @include flex(row, center);
+    border: 1px solid $primary-200;
+    border-radius: 5px;
+    & input {
+        border: none;
+    }
+    &.form {
+        &__input {
+            &_filled {
+                & input {
+                    padding-right: 0;
+                    max-width: 50px;
+                }
+            }
+        }
+    }
+    &_size {
+        &-s {
+            &.form {
+                &__input {
+                    &_filled {
+                        & input {
+                            max-width: 35px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

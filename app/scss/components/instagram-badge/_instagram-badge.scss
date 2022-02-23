@@ -1,0 +1,31 @@
+.instagram-badge {
+    @include flex(row, center, center);
+    background: $white;
+    border-radius: 10px;
+    width: 100%;
+    padding: 10px;
+    text-decoration: none;
+    &__icon {
+        flex-shrink: 0;
+        margin-right: 5px;
+    }
+    &__arrow {
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+    &__title {
+        margin: 0;
+        font-size: 1.5rem;
+        line-height: 1.25;
+        color: $dark;
+        letter-spacing: -0.05em;
+        font-weight: 500;
+        & span {
+            display: block;
+            color: $gray-500;
+            font-size: 1.2rem;
+            font-weight: normal;
+            letter-spacing: 0;
+        }
+    }
+}

@@ -1,0 +1,117 @@
+// -----------------------------------------------------------------------------
+// This file contains very basic styles.
+// -----------------------------------------------------------------------------
+:root {
+    font-size: 62.5%;
+}
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+a {
+    display: inline-block;
+    color: $dark;
+}
+
+p {
+    font-size: 1.6rem;
+    color: $dark;
+}
+b, strong {
+    @include font-weight('bold');
+}
+body {
+    font-family: $secondary-font;
+    @include font-weight('normal');
+    color: $dark;
+    font-size: 1.6rem;
+    background: $white;
+}
+button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    outline-style: none;
+    outline-color: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    color: $dark;
+}
+select {
+    @extend button;
+    font-size: 1.7rem;
+}
+input {
+    @extend button;
+    cursor: text;
+    padding: 0 15px;
+    font-size: 1.7rem;
+}
+textarea {
+    @extend button;
+    display: block;
+    cursor: text;
+    resize: none;
+    font-size: 1.7rem;
+    &:focus {
+        border-color: $secondary-500;
+    }
+}
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+sup {
+    top: -.7em;
+    left: 1px;
+    font-size: .8rem;
+}
+::-webkit-input-placeholder {
+    font-size: 1.7rem;
+    color: $gray-500;
+    letter-spacing: .01em;
+}
+::-moz-placeholder {
+    font-size: 1.7rem;
+    color: $gray-500;
+    letter-spacing: .01em;
+    opacity: 1;
+}
+:-moz-placeholder {
+    font-size: 1.7rem;
+    color: $gray-500;
+    letter-spacing: .01em;
+    opacity: 1;
+}
+:-ms-input-placeholder {
+    font-size: 1.7rem;
+    color: $gray-500;
+    letter-spacing: .01em;
+}
+:focus::-webkit-input-placeholder {
+    color: transparent;
+}
+:focus::-moz-placeholder {
+    color: transparent;
+}
+:focus:-moz-placeholder {
+    color: transparent;
+}
+:focus::-ms-input-placeholder {
+    color: transparent;
+}
