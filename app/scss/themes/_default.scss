@@ -206,6 +206,9 @@
 		font-size: 1.5rem;
 		line-height: 1.33;
 		color: $gray-300;
+		& a {
+			color: $gray-300;
+		}
 	}
 	&__title {
 		color: $secondary-150;

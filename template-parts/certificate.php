@@ -14,7 +14,7 @@
 				<!-- <img src="<?php echo get_template_directory_uri(); ?>/img/ums-baloon-img.svg" class="d-none d-lg-block certificate__baloon-img" alt="<?php echo get_bloginfo('name'); ?>"> -->
 				<p class="d-none d-lg-block certificate__title">Сертификат</p>
 				<p class="certificate__text">По окончании курса, студенты защитившие итоговую работу получают именной сертификат от UX Mind School</p>
-				<p class="certificate__note">А лучшим выпускникам предлагаем оплачиваемую стажировку и работу в нашей студии дизайна UX&nbsp;Mind&nbsp;и&nbsp;компаний, с которыми мы сотрудничаем</p>
+				<p class="certificate__note">Лучшим выпускникам предлагаем оплачиваемую стажировку в нашей студии <a class="link" target="_blank" href="https://ux-mind.pro/">UX Mind</a> или&nbsp;рекомендуем&nbsp;IT компаниям-партнерам</p>
 			</div>
 			<div class="order-1 order-lg-2 col-12 col-lg-7">
 				<div class="certificate__img">

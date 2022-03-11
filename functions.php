@@ -879,49 +879,7 @@ function get_amocrm_contacts($customer_telephone) {
 function amocrm_intensive_callback() {
 	//Получаем данные запроса
 	$data = $_POST['data'];
-	//Получаем id пользователся
-	$contact_id = get_amocrm_contacts($data['customer']['telephone']);
-	//Проверяем существует ли пользователь
-	if ($contact_id) {
-		//Создаем тег
-		$tag = $data['tag']['name'];
-		//Получаем модель контакта
-		$contact = json_decode(make_amocrm_api_call('contacts/' . $contact_id, [], 'GET', ''), true);
-		//Получаем теги контакта
-		$contact_tags = $contact['_embedded']['tags'];
-		//Обрабатываем теги
-		$filter = array_filter($contact_tags, function($array) {
-			return ($array['name'] != $tag);
-		});
-		array_push($filter, array('name' => $tag));
-		//Создаем данные для отправки
-		$post_data = array(
-			'custom_fields_values' => array(
-				array(
-					'field_id' => 312215,
-					'values' => array(
-						array(
-							'value' => $data['intensive']['name']
-						)
-					)
-				),
-				array(
-					'field_id' => 312217,
-					'values' => array(
-						array(
-							'value' => (int)$data['intensive']['timestamp']
-						)
-					)
-				)
-			),
-			'_embedded' => array(
-				'tags' => $filter
-			)
-		);
-		$api_response = make_amocrm_api_call('contacts/' . $contact_id, $post_data, 'PATCH', '');
-	}
-	else {
-		$post_data = array(
+	$post_data = array(
 			array(
 				'name' => $data['name'],
 				'custom_fields_values' => array(
@@ -970,47 +928,12 @@ function amocrm_intensive_callback() {
 			)
 		);
 		$api_response = make_amocrm_api_call('contacts', $post_data, 'POST', '');
-	}
 	echo $api_response;
 	wp_die();
 }
 
 function amocrm_call_callback() {
 	$data = $_POST['data'];
-	//Производим поиск контакта по номеру телефона
-	$contact_id = get_amocrm_contacts($data['customer']['telephone']);
-	if ($contact_id) {
-		//Создаем тег
-		$tag = $data['tag']['name'];
-		//Получаем модель контакта
-		$contact = json_decode(make_amocrm_api_call('contacts/' . $contact_id, [], 'GET', ''), true);
-		//Получаем теги контакта
-		$contact_tags = $contact['_embedded']['tags'];
-		//Обрабатываем теги
-		$filter = array_filter($contact_tags, function($array) {
-			return ($array['name'] != $tag);
-		});
-		array_push($filter, array('name' => $tag));
-		$post_data = array(
-			array(
-				'custom_fields_values' => array(
-					array(
-						'field_id' => 313453,
-						'values' => array(
-							array(
-								'value' => $data['customer']['message']
-							)
-						)
-					)
-				),
-				'_embedded' => array(
-					'tags' => $filter
-				)
-			)
-		);
-		$api_response = make_amocrm_api_call('contacts/' . $contact_id, $post_data, 'PATCH', '');
-	}
-	else {
 		$post_data = array(
 			array(
 				'name' => $data['customer']['name'],
@@ -1053,35 +976,12 @@ function amocrm_call_callback() {
 		);
 	
 		$api_response = make_amocrm_api_call('contacts', $post_data, 'POST', '');
-	}
 	echo $api_response;
 	wp_die();
 }
 
 function amocrm_free_callback() {
 	$data = $_POST['data'];
-	//Производим поиск контакта по номеру телефона
-	$contact_id = get_amocrm_contacts($data['customer']['telephone']);
-	if ($contact_id) {
-		//Создаем тег
-		$tag = $data['tag']['name'];
-		//Получаем модель контакта
-		$contact = json_decode(make_amocrm_api_call('contacts/' . $contact_id, [], 'GET', ''), true);
-		//Получаем теги контакта
-		$contact_tags = $contact['_embedded']['tags'];
-		//Обрабатываем теги
-		$filter = array_filter($contact_tags, function($array) {
-			return ($array['name'] != $tag);
-		});
-		array_push($filter, array('name' => $tag));
-		$post_data = array(
-			'_embedded' => array(
-				'tags' => $filter
-			)
-		);
-		$api_response = make_amocrm_api_call('contacts/' . $contact_id, $post_data, 'PATCH', '');
-	}
-	else {
 		$post_data = array(
 			array(
 				'name' => $data['customer']['name'],
@@ -1115,7 +1015,6 @@ function amocrm_free_callback() {
 			)
 		);
 		$api_response = make_amocrm_api_call('contacts', $post_data, 'POST', '');
-	}
 	echo $api_response;
 	wp_die();
 }
@@ -1132,7 +1031,7 @@ function amocrm_lead_callback() {
 					'field_id' => 339289,
 					'values' => array(
 						array(
-							'value' => $data['price']
+							'value' => (int)$data['price']
 						)
 					)
 				),
@@ -1167,14 +1066,6 @@ function amocrm_lead_callback() {
 							'value' => (int)$data['date']
 						)
 					)
-				),
-				array(
-					'field_id' => 307551,
-					'values' => array(
-						array(
-							'value' => $data['address']
-						)
-					)
 				)
 			),
 			'_embedded' => array(
@@ -1194,24 +1085,9 @@ function amocrm_lead_callback() {
 	);
 
 	//Создаем сделку в crm
-	$lead = json_decode(make_amocrm_api_call('leads', $lead_data, 'POST', ''), true);
-	//Получаем id сделки
+	$lead = make_amocrm_api_call('leads', $lead_data, 'POST', '');
 	$lead_id = $lead['_embedded']['leads'][0]['id'];
-	//Производим поиск контакта по номеру телефона
-	$contact_id = get_amocrm_contacts($data['customer']['telephone']);
 
-	if ($contact_id) {
-		$entity_data = array(
-			array(
-				'to_entity_id' => (int)$contact_id,
-				'to_entity_type' => 'contacts',
-				'metadata' => array(
-					'is_main' => true
-				)
-			)
-		);
-	}
-	else {
 		$contact_post_data = array(
 			array(
 				'name' => $data['customer']['name'],
@@ -1238,21 +1114,19 @@ function amocrm_lead_callback() {
 			)
 		);
 		$contact = json_decode(make_amocrm_api_call('contacts', $contact_post_data, 'POST', ''), true);
-		$contact_id = $contact['_embedded']['contacts'][0]['id'];
-		$entity_data = array(
-			array(
-				'to_entity_id' => (int)$contact_id,
-				'to_entity_type' => 'contacts',
-				'metadata' => array(
-					'is_main' => true,
-				)
-			)
-		);
-	}
-	
+		// $contact_id = $contact['_embedded']['contacts'][0]['id'];
+		// $entity_data = array(
+		// 	array(
+		// 		'to_entity_id' => (int)$contact_id,
+		// 		'to_entity_type' => 'contacts',
+		// 		'metadata' => array(
+		// 			'is_main' => true,
+		// 		)
+		// 	)
+		// );
 	//Создаем связку между контактом и сделкой
-	$linked_entities_response = make_amocrm_api_call('leads' . $lead_id . '/link', $entity_data, 'POST', '');
-	echo $linked_entities_response;
+	// $linked_entities_response = make_amocrm_api_call('leads' . $lead_id . '/link', $entity_data, 'POST', '');
+	echo json_encode($lead);
 	wp_die();
 }
 

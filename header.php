@@ -24,6 +24,7 @@
 	<?php wp_head(); ?>
 	<?php
 	// BEGIN OPTIONS
+	define('HOME_PAGE_ID', 2);
 	$telephone_number = get_field( 'telephone_number', 'option' );
 	$logo_light = get_field( 'logo_light', 'option' );
 	$logo_dark = get_field( 'logo_dark', 'option' );

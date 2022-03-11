@@ -15,7 +15,6 @@
 get_header();
 
 // PARAMS
-define( 'HOME_PAGE_ID', 2 );
 $home_page_title = get_field( 'title', 'option' );
 $home_page_description = get_field( 'description', 'option' );
 ?>

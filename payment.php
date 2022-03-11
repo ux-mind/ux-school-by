@@ -79,7 +79,7 @@ $is_promocode = get_field('promocode_bool', 2);
 									<!-- BEGIN ERIP -->
 									<section class="payment-section payment-form__section">
 										<div class="erip-payment payment-form__section-item">
-											<span class="payment-form__section-name">3. Как оплатить через ЕРИП</span>
+											<span class="payment-form__section-name">3. Оплатить картой</span>
 											<div class="erip-payment__wrapper">
 												<div class="erip-payment__price">Сумма для оплаты<span class="erip-payment__price-value">0 BYN</span></div>
 												<div class="erip-payment__grid">
@@ -108,7 +108,14 @@ $is_promocode = get_field('promocode_bool', 2);
 													</div>
 												</div>
 												<p class="payment-message erip-payment__message"><span class="erip-payment__message-note">*Скидки по акциям и промокодам не суммируются.</span>После внесения платежа, отправьте копию квитанции на <a href="mailto:hello@ux-school.by">hello@ux-school.by</a></p>
-												<div class="erip-payment__content">
+												<script src='https://secure.tap2pay.me/checkout.v1.js'></script>
+												<script>
+													const t2pHandler = new T2P.Checkout({
+														merchant_id: "uAgssfy5"
+													});
+												</script>
+												<button style="margin-top: 20px;" class="tap2pay-pay-btn" type="button" onClick="t2pHandler.openProduct('WMSkLzcy')">Оплатить картой</button>
+												<!-- <div class="erip-payment__content">
 													<div class="erip-payment__content-wrapper">
 														<p>Как найти нас в ЕРИП:</p>
 														<ul>
@@ -126,7 +133,7 @@ $is_promocode = get_field('promocode_bool', 2);
 														<img class="erip-payment__qr-code-img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/img/qr-code.svg" alt="UX Mind School - оплата курсов с помощью ЕРИП">
 														<figcaption class="erip-payment__qr-code-note">Код услуги: 4725501</figcaption>
 													</figure>
-												</div>
+												</div> -->
 											</div>
 										</div>
 									</section>
@@ -174,15 +181,17 @@ $is_promocode = get_field('promocode_bool', 2);
 									</section>
 									<!-- END BANK PAYMENT -->
 									<!-- BEGIN ONLINE PAYMENT -->
-									<section class="payment-form__section payment-section">
+									<section class="d-none payment-form__section payment-section">
 										<div class="form webpay-form payment-form__section-item">
 											<p class="payment-form__section-name">3. Оплата картой</p>
 											<div class="payment-form__section-grid">
 											<script src='https://secure.tap2pay.me/checkout.v1.js'></script>
-<script>var t2pHandler = new T2P.Checkout({merchant_id: "uAgssfy5"});</script>
-<button class="tap2pay-pay-btn" type="button" onClick="t2pHandler.openProduct('WMSkLzcy')">
-  Pay using<i class="tap2pay-badge"></i><div class="tap2pay-safe-icons"></div>
-</button>
+												<script>
+													const t2pHandler = new T2P.Checkout({
+														merchant_id: "uAgssfy5"
+													});
+												</script>
+												<button style="margin-top: 20px;" class="tap2pay-pay-btn" type="button" onClick="t2pHandler.openProduct('WMSkLzcy')">Оплатить картой</button>
 											</div>
 											<div style="display: none;" class="payment-form__section-grid">
 												<p class="webpay-form__note">Свяжитесь с нами и мы предложим вам удобный вариант оплаты картой</p>

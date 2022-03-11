@@ -4,7 +4,7 @@
 const PAYMENT_METHODS_DATA = [{
     id: 0,
     name: `erip`,
-    title: `ЕРИП оплата&nbsp;в&nbsp;3&nbsp;этапа`,
+    title: `Оплатить картой`,
     checked: false
 },
 {
@@ -25,12 +25,12 @@ const PAYMENT_METHODS_DATA = [{
     title: `В отделении банка`,
     checked: false
 },
-{
-    id: 3,
-    name: `online`,
-    title: `Оплатить картой`,
-    checked: false
-},
+// {
+//     id: 3,
+//     name: `online`,
+//     title: `Оплатить картой`,
+//     checked: false
+// },
 {
     id: 5,
     name: `online`,
@@ -1337,9 +1337,8 @@ function wpcf7SentHandler(event) {
                 //Send to CRM
                 crmObject = new amoCRMInsance(131, inputs, 'lead');
                 requestData = crmObject.getRequestObject();
-                console.log(requestData);
                 jQuery.when(window.utils.ajaxRequest(requestData)).then((resp) => {
-                    console.log(resp);
+                    console.log(jQuery.parseJSON(resp));
                     // Yandex conversion
                     ym(49171171, 'reachGoal', 'lead_form');
                 }, error => console.log(new Error(error)));

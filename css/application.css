@@ -8337,6 +8337,8 @@ div.wpcf7-response-output {
     font-size: 1.5rem;
     line-height: 1.33;
     color: #5d6266; }
+    .certificate__note a {
+      color: #5d6266; }
   .certificate__title {
     color: #c17afc;
     text-transform: uppercase;

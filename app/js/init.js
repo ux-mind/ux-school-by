@@ -4,7 +4,7 @@
 const PAYMENT_METHODS_DATA = [{
     id: 0,
     name: `erip`,
-    title: `ЕРИП оплата&nbsp;в&nbsp;3&nbsp;этапа`,
+    title: `Оплатить картой`,
     checked: false
 },
 {
@@ -25,12 +25,12 @@ const PAYMENT_METHODS_DATA = [{
     title: `В отделении банка`,
     checked: false
 },
-{
-    id: 3,
-    name: `online`,
-    title: `Оплатить картой`,
-    checked: false
-},
+// {
+//     id: 3,
+//     name: `online`,
+//     title: `Оплатить картой`,
+//     checked: false
+// },
 {
     id: 5,
     name: `online`,
