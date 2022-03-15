@@ -1444,8 +1444,8 @@ define('SHOP_CODE_ONLINE', '1403');
 define('SHOP_CODE_OFFLINE', '1374');
 define('API_ONLINE_URL', 'https://insync2.alfa-bank.by/mBank256/ExtRbc');
 define('API_OFFLINE_URL', 'https://93.84.121.106/mBank2/ExtRbc');
-define('INSTALLMENT_TYPE', 'PSL');
-define('INSTALLMENT_RATE', 15);
+define('INSTALLMENT_TYPE', 'PSS');
+define('INSTALLMENT_RATE', 19);
 
 // INSTALLMENT
 function installment_callback() {
@@ -1481,14 +1481,15 @@ function installment_callback() {
 		CURLOPT_SSL_VERIFYHOST => 0,
 		CURLOPT_SSL_VERIFYPEER => 0,
 		CURLOPT_CUSTOMREQUEST => 'POST',
-		CURLOPT_POSTFIELDS => json_encode( $installment_data ),
+		CURLOPT_POSTFIELDS => json_encode($installment_data),
 		CURLOPT_HTTPHEADER => array(
 			'Content-Type: application/json'
 		),
 	));
 	$response = curl_exec($curl);
 	curl_close($curl);
-	echo $response;
+	// echo $response;
+	echo json_encode($installment_data);
 	wp_die();
 }
 function get_installment_payment_value( $course_price, $installment_term = 12 ) {

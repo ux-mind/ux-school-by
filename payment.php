@@ -186,12 +186,12 @@ $is_promocode = get_field('promocode_bool', 2);
 											<p class="payment-form__section-name">3. Оплата картой</p>
 											<div class="payment-form__section-grid">
 											<script src='https://secure.tap2pay.me/checkout.v1.js'></script>
-												<script>
+												<!-- <script>
 													const t2pHandler = new T2P.Checkout({
 														merchant_id: "uAgssfy5"
 													});
-												</script>
-												<button style="margin-top: 20px;" class="tap2pay-pay-btn" type="button" onClick="t2pHandler.openProduct('WMSkLzcy')">Оплатить картой</button>
+												</script> -->
+												<!-- <button style="margin-top: 20px;" class="tap2pay-pay-btn" type="button" onClick="t2pHandler.openProduct('WMSkLzcy')">Оплатить картой</button> -->
 											</div>
 											<div style="display: none;" class="payment-form__section-grid">
 												<p class="webpay-form__note">Свяжитесь с нами и мы предложим вам удобный вариант оплаты картой</p>
@@ -212,7 +212,8 @@ $is_promocode = get_field('promocode_bool', 2);
 									<section class="payment-form__section payment-section installment-payment">
 										<div class="payment-form__section-item">
 											<p class="payment-form__section-name">Введите Ваши данные</p>
-											<div class="payment-form__section-grid installment-payment__grid">
+											<p class="payment-section__price installment-payment__price">Альфа-банк временно приостановил кредитование</p>
+											<div class="d-none payment-form__section-grid installment-payment__grid">
 												<p class="payment-section__price installment-payment__price">Платежи по кредиту:<span class="payment-section__price-value installment-payment__price-value">0 BYN</span></p>
 												<div class="installment-payment__form">
 													<div class="installment-payment__form-wrapper">
