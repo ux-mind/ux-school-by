@@ -590,7 +590,7 @@ function get_schema_home_page(){
 			"name": "UX Mind School - Школа дизайна в Минске",
 			"legalName": "UX Mind School",
 			"url" : "https://ux-school.by",
-			"description": "Курсы UX/UI дизайна в Минске, проектирование интерфейсов. Обучение UX/UI Design, помощь в трудоустройстве, рассрочка, скидки студентам 10%.",
+			"description": "Курсы UX/UI дизайна в Минске, проектирование интерфейсов. Обучение UX/UI Design, помощь в трудоустройстве, рассрочка.",
 			"image": "https://ux-school.by/wp-content/uploads/2020/06/ums-logo.svg",
 			"founder": [{
 				"@type": "Person",
@@ -1445,7 +1445,7 @@ define('SHOP_CODE_OFFLINE', '1374');
 define('API_ONLINE_URL', 'https://insync2.alfa-bank.by/mBank256/ExtRbc');
 define('API_OFFLINE_URL', 'https://93.84.121.106/mBank2/ExtRbc');
 define('INSTALLMENT_TYPE', 'PSS');
-define('INSTALLMENT_RATE', 19);
+define('INSTALLMENT_RATE', 25.9);
 
 // INSTALLMENT
 function installment_callback() {
@@ -1488,8 +1488,7 @@ function installment_callback() {
 	));
 	$response = curl_exec($curl);
 	curl_close($curl);
-	// echo $response;
-	echo json_encode($installment_data);
+	echo $response;
 	wp_die();
 }
 function get_installment_payment_value( $course_price, $installment_term = 12 ) {

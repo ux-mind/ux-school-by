@@ -1002,6 +1002,7 @@ document.addEventListener('click', (evt) => {
                     target.textContent = 'Обрабатываем данные...';
                 },
                 success: function (response) {
+                    console.log(response);
                     // Yandex conversion
                     ym(49171171, 'reachGoal', 'payment');
                     target.textContent = 'Перенаправляем на оплату...';

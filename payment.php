@@ -182,7 +182,7 @@ $is_promocode = get_field('promocode_bool', 2);
 									<!-- END BANK PAYMENT -->
 									<!-- BEGIN ONLINE PAYMENT -->
 									<section class="d-none payment-form__section payment-section">
-									<div class="erip-payment payment-form__section-item">
+										<div class="erip-payment payment-form__section-item">
 											<span class="payment-form__section-name">3. Оплатить картой</span>
 											<div class="erip-payment__wrapper">
 												<div class="erip-payment__price">Сумма для оплаты<span class="erip-payment__price-value">0 BYN</span></div>
@@ -270,8 +270,8 @@ $is_promocode = get_field('promocode_bool', 2);
 									<section class="payment-form__section payment-section installment-payment">
 										<div class="payment-form__section-item">
 											<p class="payment-form__section-name">Введите Ваши данные</p>
-											<p class="payment-section__price installment-payment__price">Альфа-банк временно приостановил кредитование</p>
-											<div class="d-none payment-form__section-grid installment-payment__grid">
+											<p class="d-none payment-section__price installment-payment__price">Альфа-банк временно приостановил кредитование</p>
+											<div class="payment-form__section-grid installment-payment__grid">
 												<p class="payment-section__price installment-payment__price">Платежи по кредиту:<span class="payment-section__price-value installment-payment__price-value">0 BYN</span></p>
 												<div class="installment-payment__form">
 													<div class="installment-payment__form-wrapper">
