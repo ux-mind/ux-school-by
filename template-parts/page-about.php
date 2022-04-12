@@ -19,7 +19,7 @@ $ums_about_video_id = get_field('ums_about_video_id', $post_id);
 $ums_about_numbers = get_field('ums_about_numbers', $post_id);
 $ums_offices_images = get_field('ums_about_gallery_offices', $post_id);
 $ums_images = get_field('ums_about_gallery_images', $post_id);
-// $ums_team = get_field('ums_about_team', $post_id);
+$ums_team = null;
 ?>
 <div class="pages-template__grid about-page__grid">
     <div class="row">

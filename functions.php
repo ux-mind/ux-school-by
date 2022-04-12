@@ -590,7 +590,7 @@ function get_schema_home_page(){
 			"name": "UX Mind School - Школа дизайна в Минске",
 			"legalName": "UX Mind School",
 			"url" : "https://ux-school.by",
-			"description": "Курсы UX/UI дизайна в Минске, проектирование интерфейсов. Обучение UX/UI Design, помощь в трудоустройстве, рассрочка.",
+			"description": "Курсы UX/UI дизайна в Минске, проектирование интерфейсов. Обучение UX/UI Design, помощь в трудоустройстве, рассрочка, скидка 10% выпускникам UX Mind School на следующий курс",
 			"image": "https://ux-school.by/wp-content/uploads/2020/06/ums-logo.svg",
 			"founder": [{
 				"@type": "Person",
