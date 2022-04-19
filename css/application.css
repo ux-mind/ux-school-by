@@ -9159,6 +9159,19 @@ div.wpcf7-response-output {
     color: #665d5d; }
     .about-course__info p:last-child {
       margin-bottom: 0; }
+  .about-course__info ul, .about-course__info ol {
+    padding: 0;
+    margin: 0;
+    padding-left: 20px; }
+    .about-course__info ul li, .about-course__info ol li {
+      margin: 0;
+      letter-spacing: .01em;
+      font-size: 1.7rem;
+      line-height: 1.47;
+      margin-bottom: 5px;
+      color: #665d5d; }
+      .about-course__info ul li:last-child, .about-course__info ol li:last-child {
+        margin-bottom: 0; }
   .about-course__video {
     position: relative;
     width: 100%;
@@ -12078,6 +12091,9 @@ div.wpcf7-response-output {
   .course-info__select::before {
     top: calc(100% + 1px); }
   .about-course__info p {
+    font-size: 1.5rem;
+    line-height: 1.45; }
+  .about-course__info ul li, .about-course__info ol li {
     font-size: 1.5rem;
     line-height: 1.45; }
   .all-courses {

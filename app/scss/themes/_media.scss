@@ -2145,6 +2145,12 @@
 				font-size: 1.5rem;
 				line-height: 1.45;
 			}
+			& ul, ol {
+				& li {
+					font-size: 1.5rem;
+					line-height: 1.45;
+				}
+			}
 		}
 	}
 	.all-courses {

@@ -110,11 +110,12 @@ $ums_course_price = get_field('ums_course_info_price', $course_post_id);
 						
 					</div>
 					<div class="course-info__options">
-						<?php if ($is_course_free): ?>
+						<!-- <?php if ($is_course_free): ?>
 							<button <?php if ($is_course_full): ?>disabled<?php endif; ?> type="button" data-modal="#order-modal" class="course-btn"><?php if ($is_course_full): ?>Группа набрана<?php else: ?>Оставить заявку<?php endif; ?></button>
 						<?php else: ?>
 							<button <?php if ($is_course_full): ?>disabled<?php endif; ?> type="button" data-modal="#payment-modal" class="course-btn"><?php if ($is_course_full): ?>Группа набрана<?php else: ?>Хочу участвовать<?php endif; ?></button>
-						<?php endif; ?>
+						<?php endif; ?> -->
+						<a target="_blank" href="https://mnlp.cc/mini?domain=uxmind&id=4&utm_source=website&utm_term=int" class="course-btn"><?php if ($is_course_full): ?>Группа набрана<?php else: ?>Хочу участвовать<?php endif; ?></a>
 					</div>
 				</div>
 			</div>
