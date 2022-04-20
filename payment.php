@@ -108,14 +108,10 @@ $is_promocode = get_field('promocode_bool', 2);
 													</div>
 												</div>
 												<p class="payment-message erip-payment__message"><span class="erip-payment__message-note">*Скидки по акциям и промокодам не суммируются.</span>После внесения платежа, отправьте копию квитанции на <a href="mailto:hello@ux-school.by">hello@ux-school.by</a></p>
-												<!-- <script src='https://secure.tap2pay.me/checkout.v1.js'></script>
-												<script>
-													const t2pHandler = new T2P.Checkout({
-														merchant_id: "uAgssfy5"
-													});
-												</script>
-												<button style="margin-top: 20px;" class="tap2pay-pay-btn" type="button" onClick="t2pHandler.openProduct('WMSkLzcy')">Оплатить картой</button> -->
-												<div class="erip-payment__content">
+												<script src='https://secure.tap2pay.me/checkout.v1.js'></script>
+												<script>var t2pHandler = new T2P.Checkout({merchant_id: "uAgssfy5"});</script>
+												<button style="margin-top: 20px;" class="tap2pay-pay-btn" type="button" onClick="t2pHandler.openProduct('1sDWEevs')">Оплатить картой</button>
+												<div class="d-none erip-payment__content">
 													<div class="erip-payment__content-wrapper">
 														<p>Как найти нас в ЕРИП:</p>
 														<ul>
