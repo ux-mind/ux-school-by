@@ -43,6 +43,8 @@ define('AMOCRM_CLIENT_ID', '8b5659da-cfc4-46d9-be3b-f7f759f56134');
 define('AMOCRM_CLIENT_SECRET', 'r1n4H8fiK1U9YgPS0qOZ4p2IRYUa4RyXLJkM9EBgx0QUM8hgwJbtnEJfIYAtANhc');
 define('AMOCRM_REDIRECT_URI', 'https://ux-school.by/');
 
+define('AMOCRM_PIPELINE_ID', '3153721');
+
 //IP INFO
 define('IP_INFO_TOKEN', 'ce4ee1923ec809');
 
@@ -1024,7 +1026,7 @@ function amocrm_lead_callback() {
 	$lead_data = array(
 		array(
 			'name' => $data['title'],
-			'pipeline_id' => 3153721,
+			'pipeline_id' => (int)AMOCRM_PIPELINE_ID,
 			'status_id' => (int)$data['statusId'],
 			'custom_fields_values' => array(
 				array(
@@ -1085,8 +1087,10 @@ function amocrm_lead_callback() {
 	);
 
 	//Создаем сделку в crm
-	$lead = make_amocrm_api_call('leads', $lead_data, 'POST', '');
-	$lead_id = $lead['_embedded']['leads'][0]['id'];
+	$lead_response = make_amocrm_api_call('leads', $lead_data, 'POST', '');
+	$lead_response_format = json_decode($lead_response, true);
+	//Получаем id сделки
+	$lead_id = $lead_response_format['_embedded']['leads'][0]['id'];
 
 		$contact_post_data = array(
 			array(
@@ -1113,20 +1117,23 @@ function amocrm_lead_callback() {
 				)
 			)
 		);
-		$contact = json_decode(make_amocrm_api_call('contacts', $contact_post_data, 'POST', ''), true);
-		// $contact_id = $contact['_embedded']['contacts'][0]['id'];
-		// $entity_data = array(
-		// 	array(
-		// 		'to_entity_id' => (int)$contact_id,
-		// 		'to_entity_type' => 'contacts',
-		// 		'metadata' => array(
-		// 			'is_main' => true,
-		// 		)
-		// 	)
-		// );
+		$contact_response = make_amocrm_api_call('contacts', $contact_post_data, 'POST', '');
+		$contact_response_format = json_decode($contact_response, true);
+		$contact_id = $contact_response_format['_embedded']['contacts'][0]['id'];
+		$entity_data = array(
+			array(
+				'to_entity_id' => (int)$contact_id,
+				'to_entity_type' => 'contacts',
+				'metadata' => array(
+					'is_main' => true,
+				)
+			)
+		);
+	// }
+	
 	//Создаем связку между контактом и сделкой
-	// $linked_entities_response = make_amocrm_api_call('leads' . $lead_id . '/link', $entity_data, 'POST', '');
-	echo json_encode($lead);
+	$linked_entities_response = make_amocrm_api_call('leads/' . $lead_id . '/link', $entity_data, 'POST', '');
+	echo $linked_entities_response;
 	wp_die();
 }
 
