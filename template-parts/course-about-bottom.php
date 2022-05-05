@@ -25,7 +25,7 @@
             <button type="button" data-modal="#test-course-modal" class="link about__wrapper-link">Бесплатное пробное занятие</button>
         <?php endif; ?>
         <?php elseif ($is_course_free): ?>
-            <button <?php if ($is_course_full): ?>disabled<?php endif; ?> type="button" data-modal="#order-modal" class="btn about__btn"><?php if ($is_course_full): ?>Группа набрана<?php else: ?>Оставить заявку<?php endif; ?></button>
+            <a href="https://t.me/+nIfL5DCvB5kxNjQy" target="_blank" rel="noopener noreferrer" <?php if ($is_course_full): ?>disabled<?php endif; ?> class="btn about__btn"><?php if ($is_course_full): ?>Группа набрана<?php else: ?>Оставить заявку<?php endif; ?></a>
         <?php else: ?>
             <button <?php if ($is_course_full): ?>disabled<?php endif; ?> type="button" data-modal="#payment-modal" class="btn about__btn"><?php if ($is_course_full): ?>Группа набрана<?php else: ?>Хочу участвовать<?php endif; ?></button>
         <?php endif; ?>

@@ -1100,8 +1100,7 @@ function amocrm_lead_callback() {
 						'field_id' => 149693,
 						'values' => array(
 							array(
-								'value' => $data['customer']['telephone'],
-								'enum_code' => 'WORK'
+								'value' => $data['customer']['telephone']
 							)
 						)
 					),
@@ -1109,8 +1108,7 @@ function amocrm_lead_callback() {
 						'field_id' => 149695,
 						'values' => array(
 							array(
-								'value' => $data['customer']['email'],
-								'enum_code' => 'WORK'
+								'value' => $data['customer']['email']
 							)
 						)
 					)

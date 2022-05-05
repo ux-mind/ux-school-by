@@ -14,6 +14,7 @@ $logo_light = get_field( 'logo_light', 'option' );
 // END OPTIONS
 $google_link = 'https://www.google.com/maps/place/UX+Mind+School/@53.9165638,27.584838,17z/data=!4m7!3m6!1s0x46dbcfc1ae2d4963:0x3fdc01c741408b64!8m2!3d53.9165638!4d27.5870267!9m1!1b1';
 $doc_link = 'https://ux-school.by/wp-content/uploads/2021/05/public_offer.pdf';
+$doc_link_entity = 'https://ux-school.by/wp-content/uploads/2022/05/dogovor_publichnoj_oferty_dlya_yuridicheskih_licz.pdf';
 $developer_link = 'http://ux-mind.pro';
 $instagram_link = 'https://www.instagram.com/ux_mind_school/';
 ?>
@@ -129,7 +130,8 @@ $instagram_link = 'https://www.instagram.com/ux_mind_school/';
 						<p class="footer__info-text">Предоставляемая Вами персональная информация (например: имя, адрес, телефон, e-mail, номер банковской карты и прочее) является конфиденциальной и не подлежит разглашению. Данные карточки передаются только в зашифрованном виде и не сохраняются на данном интернет-ресурсе</p>
 						<div class="footer__info-links">
 							<button type="button" data-modal="#content-modal" class="link footer__info-link">Как оплатить</button>
-							<a href="<?php echo esc_url($doc_link); ?>" target="_blank" rel="noopener noreferrer" class="link footer__info-link">Договор оферты</a>
+							<a href="<?php echo esc_url($doc_link); ?>" target="_blank" rel="noopener noreferrer" class="link footer__info-link">Договор оферты (физ. лица)</a>
+							<a href="<?php echo esc_url($doc_link_entity); ?>" target="_blank" rel="noopener noreferrer" class="link footer__info-link">Договор оферты (юр. лица)</a>
 						</div>
 					</div>
 				</div>
