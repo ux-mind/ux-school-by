@@ -149,12 +149,20 @@ const PROMOCODE_SALE_VALUE = 50;
                     this.setTotalPrice(this.getSalePrice());
                     break;
             }
-            this.changeCurenciesPrice(index);
+            // this.changeCurenciesPrice(index);
             if (window.paymentSelect.instance.getPaymentType() === 'payment') {
                 let totalInputElement = jQuery('.payment-section').eq(index).find('input[name="wsb_total"]');
-                let totalInputElementName = totalInputElement.length ? 'input[name="wsb_total"]' : 'input[name="total"]';
-                jQuery('.payment-section').eq(index).find(totalInputElementName).val(this.getTotalPrice());
-                jQuery('.payment-section').eq(index).find(totalInputElementName).next().addClass('form__label_active').parent().addClass('form__input_filled');
+				let totalInputElementName = totalInputElement.length
+					? 'input[name="wsb_total"]'
+					: 'input[name="total"]';
+				jQuery('.payment-section').eq(index).find(totalInputElementName).val(this.getTotalPrice());
+				jQuery('.payment-section')
+					.eq(index)
+					.find(totalInputElementName)
+					.next()
+					.addClass('form__label_active')
+					.parent()
+					.addClass('form__input_filled');
             } else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
                 let totalInputElement = document.querySelector('input[name="total"]');
                 totalInputElement.value = this.getTotalPrice();
@@ -184,25 +192,31 @@ const PROMOCODE_SALE_VALUE = 50;
                 }
             }
         }
-        updateEripPrice(isPromocode = {}, isSale = false, isInstallment = false) {
-            const eripPaymentPriceElement = document.querySelector(`.erip-payment__price-value`);
+        updateEripPrice(isPromocode = {}, isSale = false, isInstallment = false, paymentIndex) {
+            const eripPaymentSectionCollection = document.querySelectorAll(`.payment-section`);
+			const eripPaymentPriceElement = eripPaymentSectionCollection[paymentIndex].querySelector(`.erip-payment__price-value`);
 
             if (eripPaymentPriceElement) {
                 let eripPaymentPriceValue = `${this.getSalePrice()} BYN`;
                 if (Object.values(isPromocode).length && isInstallment) {
                     eripPaymentPriceValue = `${((this.getSalePrice() - +window.promocodeData.value) / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
+                    this.setTotalPrice(((this.getSalePrice() - +window.promocodeData.value) / 3).toFixed(0));
                 }
                 else if (isSale && isInstallment) {
                     eripPaymentPriceValue = `${((this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE) / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
+                    this.setTotalPrice(((this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE) / 3).toFixed(0));
                 }
                 else if (isInstallment) {
                     eripPaymentPriceValue = `${(this.getSalePrice() / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
+                    this.setTotalPrice((this.getSalePrice() / 3).toFixed(0));
                 }
                 else if (isSale) {
                     eripPaymentPriceValue = `<span class="erip-payment__price-value-old">${this.getSalePrice()}</span> ${(this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE)} BYN`;
+                    this.setTotalPrice(this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE);
                 }
                 else if (Object.values(isPromocode).length) {
                     eripPaymentPriceValue = `<span class="erip-payment__price-value-old">${this.getSalePrice()}</span> ${this.getSalePrice() - +window.promocodeData.value} BYN`;
+                    this.setTotalPrice(this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE);
                 }
                 eripPaymentPriceElement.innerHTML = eripPaymentPriceValue;
             }

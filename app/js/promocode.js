@@ -139,9 +139,9 @@
                         sectionElement.querySelector(`.erip-payment__message-note`).classList.remove(`erip-payment__message-note_active`);
                         eripPaymentSaleField.classList.remove(`checkbox_disabled`);
                         if (eripPaymentInstallmentField.checked) {
-                            paymentInstance.updateEripPrice(false, false, true);
+                            paymentInstance.updateEripPrice({}, false, true, paymentMethod.getPaymentMethodIndex());
                         } else {
-                            paymentInstance.updateEripPrice();
+                            paymentInstance.updateEripPrice({}, false, false, paymentMethod.getPaymentMethodIndex());
                         }
                     }
                 }
@@ -155,7 +155,7 @@
                 promocodeInputElement.querySelector('.form__label').classList.remove('form__label_active');
 
                 if (paymentSelect.getPaymentType() === 'payment') {
-                    if (promocodeInputElement.closest('.payment-form__section-grid')) {
+                    if (promocodeInputElement.closest('.payment-form__section-grid') && promocodeInputElement.closest('.payment-form__section-grid').querySelector('.webpay-form__sale-checkbox')) {
                         promocodeInputElement.closest('.payment-form__section-grid').querySelector('.webpay-form__sale-checkbox').querySelector('input').checked = false;
                         promocodeInputElement.closest('.payment-form__section-grid').querySelector('.webpay-form__sale-checkbox').classList.toggle('webpay-form__sale-checkbox_state-disabled');
                     }
@@ -188,11 +188,11 @@
                                 if (eripPaymentInstallmentField.checked) {
                                     paymentInstance.updateEripPrice({
                                         value: result.value
-                                    }, false, true);
+                                    }, false, true, paymentMethod.getPaymentMethodIndex());
                                 } else {
                                     paymentInstance.updateEripPrice({
                                         value: result.value
-                                    });
+                                    }, false, false, paymentMethod.getPaymentMethodIndex());
                                 }
                             } else {
                                 paymentInstance.changeInputPrice(paymentMethod.getPaymentMethodIndex(), false, {

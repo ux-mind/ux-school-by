@@ -1,18 +1,21 @@
 'use strict';
 
 // Constants
-const PAYMENT_METHODS_DATA = [{
-    id: 0,
-    name: `erip`,
-    title: `Оплатить через ЕРИП`,
-    checked: false
-},
-{
-    id: 1,
-    name: `erip`,
-    title: `Оплатить картой`,
-    checked: false
-},
+const PAYMENT_METHODS_DATA_WITH_CARD = [
+    {
+        id: 0,
+        name: `erip`,
+        title: `Оплатить картой`,
+        checked: false
+    }
+];
+const PAYMENT_METHODS_DATA = [
+    {
+        id: 0,
+        name: `erip`,
+        title: `Оплатить через ЕРИП`,
+        checked: false
+    },
 {
     id: 4,
     name: `installment`,
@@ -35,6 +38,12 @@ const PAYMENT_METHODS_DATA = [{
     id: 5,
     name: `online`,
     title: `Рассрочка на&nbsp;8&nbsp;месяцев по&nbsp;карте&nbsp;Черепаха`,
+    checked: false
+},
+{
+    id: 1,
+    name: `erip`,
+    title: `Оплатить картой`,
     checked: false
 }];
 const INSTALLMENT_TERM = 12;
@@ -445,12 +454,20 @@ const PROMOCODE_SALE_VALUE = 50;
                     this.setTotalPrice(this.getSalePrice());
                     break;
             }
-            this.changeCurenciesPrice(index);
+            // this.changeCurenciesPrice(index);
             if (window.paymentSelect.instance.getPaymentType() === 'payment') {
                 let totalInputElement = jQuery('.payment-section').eq(index).find('input[name="wsb_total"]');
-                let totalInputElementName = totalInputElement.length ? 'input[name="wsb_total"]' : 'input[name="total"]';
-                jQuery('.payment-section').eq(index).find(totalInputElementName).val(this.getTotalPrice());
-                jQuery('.payment-section').eq(index).find(totalInputElementName).next().addClass('form__label_active').parent().addClass('form__input_filled');
+				let totalInputElementName = totalInputElement.length
+					? 'input[name="wsb_total"]'
+					: 'input[name="total"]';
+				jQuery('.payment-section').eq(index).find(totalInputElementName).val(this.getTotalPrice());
+				jQuery('.payment-section')
+					.eq(index)
+					.find(totalInputElementName)
+					.next()
+					.addClass('form__label_active')
+					.parent()
+					.addClass('form__input_filled');
             } else if (window.paymentSelect.instance.getPaymentType() === 'certificate') {
                 let totalInputElement = document.querySelector('input[name="total"]');
                 totalInputElement.value = this.getTotalPrice();
@@ -480,25 +497,31 @@ const PROMOCODE_SALE_VALUE = 50;
                 }
             }
         }
-        updateEripPrice(isPromocode = {}, isSale = false, isInstallment = false) {
-            const eripPaymentPriceElement = document.querySelector(`.erip-payment__price-value`);
+        updateEripPrice(isPromocode = {}, isSale = false, isInstallment = false, paymentIndex) {
+            const eripPaymentSectionCollection = document.querySelectorAll(`.payment-section`);
+			const eripPaymentPriceElement = eripPaymentSectionCollection[paymentIndex].querySelector(`.erip-payment__price-value`);
 
             if (eripPaymentPriceElement) {
                 let eripPaymentPriceValue = `${this.getSalePrice()} BYN`;
                 if (Object.values(isPromocode).length && isInstallment) {
                     eripPaymentPriceValue = `${((this.getSalePrice() - +window.promocodeData.value) / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
+                    this.setTotalPrice(((this.getSalePrice() - +window.promocodeData.value) / 3).toFixed(0));
                 }
                 else if (isSale && isInstallment) {
                     eripPaymentPriceValue = `${((this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE) / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
+                    this.setTotalPrice(((this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE) / 3).toFixed(0));
                 }
                 else if (isInstallment) {
                     eripPaymentPriceValue = `${(this.getSalePrice() / 3).toFixed(2)} BYN x 3 месяца<span class="erip-payment__price-note">Следующий платёж производится через месяц после&nbsp;осуществления&nbsp;предыдущего&nbsp;платежа.</span>`;
+                    this.setTotalPrice((this.getSalePrice() / 3).toFixed(0));
                 }
                 else if (isSale) {
                     eripPaymentPriceValue = `<span class="erip-payment__price-value-old">${this.getSalePrice()}</span> ${(this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE)} BYN`;
+                    this.setTotalPrice(this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE);
                 }
                 else if (Object.values(isPromocode).length) {
                     eripPaymentPriceValue = `<span class="erip-payment__price-value-old">${this.getSalePrice()}</span> ${this.getSalePrice() - +window.promocodeData.value} BYN`;
+                    this.setTotalPrice(this.getSalePrice() - this.getSalePrice() * SCHOOL_SALE_VALUE);
                 }
                 eripPaymentPriceElement.innerHTML = eripPaymentPriceValue;
             }
@@ -553,7 +576,12 @@ const PROMOCODE_SALE_VALUE = 50;
         constructor(paymentMethodsContainer) {
             this._el = document.querySelector(paymentMethodsContainer);
             if (this._el) {
-                this.renderPaymentMethods(this._el, PAYMENT_METHODS_DATA);
+                if (this._el.dataset.target) {
+                    this.renderPaymentMethods(this._el, PAYMENT_METHODS_DATA_WITH_CARD);
+                }
+                else {
+                    this.renderPaymentMethods(this._el, PAYMENT_METHODS_DATA);
+                }
                 this._el.addEventListener(`click`, this.onPaymentMethodsClickHandler.bind(this));
             }
         }
@@ -570,7 +598,7 @@ const PROMOCODE_SALE_VALUE = 50;
                 paymentSections[this._paymentMethodIndex].classList.add('payment-section_state-active');
                 // ERIP
                 if (paymentMethodName === `erip`) {
-                    paymentModule.updateEripPrice();
+                    paymentModule.updateEripPrice({}, false, false, paymentMethodIndex);
                     jQuery('body, html').animate({
                         scrollTop: jQuery('#payment-anchor').offset().top
                     }, 800);
@@ -688,19 +716,36 @@ const PROMOCODE_SALE_VALUE = 50;
                 utilsModule.removeClass(courseListElements, `ums-select__list-item_state-active`);
                 target.classList.add(`ums-select__list-item_state-active`);
 
-                if (paymentLevel === 2) {
+                if (paymentLevel && paymentLevel === 2) {
                     const paymentSections = document.querySelectorAll(`.payment-section`);
-                    paymentMethodModule.setPaymentMethodIndex(0);
                     utilsModule.removeClass(paymentSections, `payment-section_state-active`);
-                    paymentSections[0].classList.add(`payment-section_state-active`);
-                    paymentMethodModule.changePaymentMethod(0);
+                    if (paymentSections[6]) {
+                        paymentMethodModule.setPaymentMethodIndex(1);
+                        paymentSections[6].classList.add(`payment-section_state-active`);
+                        paymentMethodModule.changePaymentMethod(1);
+                    }
+                    else {
+                        paymentMethodModule.setPaymentMethodIndex(0);
+                        paymentSections[0].classList.add(`payment-section_state-active`);
+                        paymentMethodModule.changePaymentMethod(0);
+                        jQuery('.erip-payment__options').hide();
+                        jQuery('.erip-payment__price-value').addClass('d-none');
+                        jQuery('.erip-payment__price-input').removeClass('d-none');
+                    }
                     // Переписать JQuery
-                    jQuery(`.payment-item:not(:nth-child(1))`).hide();
+                    jQuery(`.payment-item`).hide();
+                    jQuery(`.payment-item:nth-child(1)`).show();
                     jQuery(`.webpay-form__sale-checkbox`).hide();
                     jQuery(`.toggle-checkbox`).hide();
+                    jQuery('body, html').animate({
+                        scrollTop: jQuery('#payment-anchor').offset().top
+                    }, 800);
                 } else {
                     // Переписать JQuery
-                    jQuery(`.payment-item:not(:nth-child(1)), .payment-item:not(:nth-child(2))`).show();
+                    jQuery('.erip-payment__options').show();
+                        jQuery('.erip-payment__price-value').removeClass('d-none');
+                        jQuery('.erip-payment__price-input').addClass('d-none');
+                    jQuery(`.payment-item`).show();
                     jQuery(`.webpay-form__sale-checkbox`).show();
                     jQuery(`.toggle-checkbox`).show();
                 }
@@ -715,12 +760,12 @@ const PROMOCODE_SALE_VALUE = 50;
                     paymentModule.setTotalPrice(this._courseData.fullPrice);
                 }
 
-                if (partialPayment === `no`) {
-                    jQuery(`.payment-item:nth-child(3)`).hide();
-                }
-                else {
-                    jQuery(`.payment-item:not(:nth-child(2))`).show();
-                }
+                // if (partialPayment === `no`) {
+                //     jQuery(`.payment-item:nth-child(3)`).hide();
+                // }
+                // else {
+                //     jQuery(`.payment-item:not(:nth-child(2))`).show();
+                // }
 
                 paymentButton.dataset.price = this._courseData.fullPrice;
                 paymentButton.dataset.salePrice = this._courseData.salePrice;
@@ -908,9 +953,9 @@ const PROMOCODE_SALE_VALUE = 50;
                         sectionElement.querySelector(`.erip-payment__message-note`).classList.remove(`erip-payment__message-note_active`);
                         eripPaymentSaleField.classList.remove(`checkbox_disabled`);
                         if (eripPaymentInstallmentField.checked) {
-                            paymentInstance.updateEripPrice(false, false, true);
+                            paymentInstance.updateEripPrice({}, false, true, paymentMethod.getPaymentMethodIndex());
                         } else {
-                            paymentInstance.updateEripPrice();
+                            paymentInstance.updateEripPrice({}, false, false, paymentMethod.getPaymentMethodIndex());
                         }
                     }
                 }
@@ -924,7 +969,7 @@ const PROMOCODE_SALE_VALUE = 50;
                 promocodeInputElement.querySelector('.form__label').classList.remove('form__label_active');
 
                 if (paymentSelect.getPaymentType() === 'payment') {
-                    if (promocodeInputElement.closest('.payment-form__section-grid')) {
+                    if (promocodeInputElement.closest('.payment-form__section-grid') && promocodeInputElement.closest('.payment-form__section-grid').querySelector('.webpay-form__sale-checkbox')) {
                         promocodeInputElement.closest('.payment-form__section-grid').querySelector('.webpay-form__sale-checkbox').querySelector('input').checked = false;
                         promocodeInputElement.closest('.payment-form__section-grid').querySelector('.webpay-form__sale-checkbox').classList.toggle('webpay-form__sale-checkbox_state-disabled');
                     }
@@ -957,11 +1002,11 @@ const PROMOCODE_SALE_VALUE = 50;
                                 if (eripPaymentInstallmentField.checked) {
                                     paymentInstance.updateEripPrice({
                                         value: result.value
-                                    }, false, true);
+                                    }, false, true, paymentMethod.getPaymentMethodIndex());
                                 } else {
                                     paymentInstance.updateEripPrice({
                                         value: result.value
-                                    });
+                                    }, false, false, paymentMethod.getPaymentMethodIndex());
                                 }
                             } else {
                                 paymentInstance.changeInputPrice(paymentMethod.getPaymentMethodIndex(), false, {
@@ -1723,6 +1768,21 @@ function onTestBtnClickHandler() {
     ));
 }
 
+function onManualInputContainerInputHandler(evt) {
+	const target = evt.target;
+	const manualPriceElValue = target.value;
+	paymentInstance.setTotalPrice(+manualPriceElValue.value);
+}
+
+function onManualInputContainerKeyupHandler(evt) {
+	const target = evt.target;
+	const manualPriceElKeyValue = evt.key;
+	if (!manualPriceElKeyValue.match(/^\d+$/)) {
+		target.value = target.value.replace(/[^0-9]/g,'');
+	}
+	paymentInstance.setTotalPrice(+target.value);
+}
+
 // Подгружаем необходимые модули
 const amoCRMInsance = window.amoCRM.init;
 const paymentMethodInstance = window.paymentMethod.instance;
@@ -1884,6 +1944,7 @@ const sortNavigationButtons = document.querySelectorAll(`.sort-navigation__butto
 const sortListContainer = document.querySelector(`.sort-list`);
 const innerCarouselElements = document.querySelectorAll(`.inner-carousel__grid`);
 const selectCourseBox = document.querySelector(`.ums-select`);
+const manualInputContainer = document.querySelector(`input[name="manual-price"]`);
 
 document.addEventListener(`DOMContentLoaded`, () => {
     initInputListener();
@@ -1897,6 +1958,14 @@ document.addEventListener(`DOMContentLoaded`, () => {
     initSwiperInstance(`.course-gallery__grid`, courseGalleryCarouselOptions);
     initSwiperInstance(`.graduates__carousel`, graduatesCarouselOptions);
     initSwiperInstance(`.testimonials__carousel`, testimonialsCarouselOptions);
+
+    // MANUAL PRICE LISTENER
+	if (manualInputContainer) {
+		manualInputContainer.addEventListener(`input`, onManualInputContainerInputHandler);
+	}
+	if (manualInputContainer) {
+		manualInputContainer.addEventListener(`keyup`, onManualInputContainerKeyupHandler);
+	}
 
 		// Adds price per month
 		const elPricePerMonth = document.querySelector('.price-box__item-value .ums-currency__value');
@@ -2064,13 +2133,14 @@ document.addEventListener('click', (evt) => {
         const form = target.closest('.form');
         const method = target.dataset.paymentMethod;
         const inputs = form.querySelectorAll('input[required]');
-        const customer = (method === 'alfa') ? form.querySelector('input[name="name"]').value : form.querySelector('input[name="wsb_customer_name"]').value;
+        const customer = form.querySelector('input[name="name"]').value;
         let isValid;
         let ajaxData = {
             action: 'payment_' + method,
             totalPrice: paymentInstance.getTotalPrice() * 100,
             productName: paymentInstance.getCurrent(),
-            customerName: customer
+            customerName: customer,
+            currencySymbol: `BYN`
         }
 
         for (let input of inputs) {
@@ -2114,11 +2184,16 @@ document.addEventListener('click', (evt) => {
                     target.textContent = 'Обрабатываем данные...';
                 },
                 success: function (response) {
-                    console.log(response);
                     // Yandex conversion
                     ym(49171171, 'reachGoal', 'payment');
                     target.textContent = 'Перенаправляем на оплату...';
                     if (paymentMethodInstance.getPaymentMethodIndex() === 1) {
+                        setTimeout(function () {
+                            document.location.replace(response[`web_checkout_link`]);
+                        }, 200);
+                        return;
+                    }
+                    if (paymentMethodInstance.getPaymentMethodIndex() === 2) {
                         setTimeout(function () {
                             document.location.replace(response.checkout.redirect_url);
                         }, 200);
@@ -2142,24 +2217,25 @@ document.addEventListener('click', (evt) => {
         const eripPaymentPromocodeField = document.querySelector(`.promocode-input`);
         if (target.checked) {
             if (eripPaymentSaleField.checked) {
-                paymentInstance.updateEripPrice({}, true, true);
+                paymentInstance.updateEripPrice({}, true, true, paymentMethodInstance.getPaymentMethodIndex());
             }
             else if (eripPaymentPromocodeField.classList.contains(`promocode-input_state-success`)) {
-                paymentInstance.updateEripPrice(window.promocodeData.value, false, true);
+                console.log(window.promocodeData);
+                paymentInstance.updateEripPrice(window.promocodeData.value, false, true, paymentMethodInstance.getPaymentMethodIndex());
             }
             else {
-                paymentInstance.updateEripPrice({}, false, true);
+                paymentInstance.updateEripPrice({}, false, true, paymentMethodInstance.getPaymentMethodIndex());
             }
         }
         else {
             if (eripPaymentSaleField.checked) {
-                paymentInstance.updateEripPrice({}, true, false);
+                paymentInstance.updateEripPrice({}, true, false, paymentMethodInstance.getPaymentMethodIndex());
             }
             else if (eripPaymentPromocodeField.classList.contains(`promocode-input_state-success`)) {
-                paymentInstance.updateEripPrice(window.promocodeData.value, false, false);
+                paymentInstance.updateEripPrice(window.promocodeData.value, false, false, paymentMethodInstance.getPaymentMethodIndex());
             }
             else {
-                paymentInstance.updateEripPrice({}, false, false);
+                paymentInstance.updateEripPrice({}, false, false, paymentMethodInstance.getPaymentMethodIndex());
             }
         }
     }
@@ -2169,18 +2245,18 @@ document.addEventListener('click', (evt) => {
         document.querySelector(`.erip-payment__message-note`).classList.toggle(`erip-payment__message-note_active`);
         if (target.checked) {
             if (eripPaymentInstallmentField.checked) {
-                paymentInstance.updateEripPrice({}, true, true);
+                paymentInstance.updateEripPrice({}, true, true, paymentMethodInstance.getPaymentMethodIndex());
             }
             else {
-                paymentInstance.updateEripPrice({}, true, false)
+                paymentInstance.updateEripPrice({}, true, false, paymentMethodInstance.getPaymentMethodIndex())
             }
         }
         else {
             if (eripPaymentInstallmentField.checked) {
-                paymentInstance.updateEripPrice({}, false, true);
+                paymentInstance.updateEripPrice({}, false, true, paymentMethodInstance.getPaymentMethodIndex());
             }
             else {
-                paymentInstance.updateEripPrice({}, false, false);
+                paymentInstance.updateEripPrice({}, false, false, paymentMethodInstance.getPaymentMethodIndex());
             }
         }
     }

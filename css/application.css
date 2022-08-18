@@ -7740,6 +7740,8 @@ div.wpcf7-response-output {
 
 .erip-payment__message {
   margin-top: 30px; }
+  .erip-payment__message_is-hidden {
+    display: none; }
   .erip-payment__message-note {
     display: none;
     margin-bottom: 5px; }
@@ -7778,6 +7780,50 @@ div.wpcf7-response-output {
     .erip-payment__price-value-old {
       color: #ccc6d1;
       text-decoration: line-through; }
+    .erip-payment__price-value_is-hidden {
+      display: none; }
+    .erip-payment__price-value svg {
+      position: relative;
+      top: -1px;
+      left: -5px; }
+  .erip-payment__price-input {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+    -webkit-box-align: end;
+        -ms-flex-align: end;
+            align-items: flex-end;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+    margin-top: 10px;
+    height: 50px;
+    width: 130px; }
+    .erip-payment__price-input_is-hidden {
+      display: none; }
+    .erip-payment__price-input input {
+      font-family: "Manrope", sans-serif;
+      font-size: 3rem;
+      line-height: 1.25;
+      letter-spacing: -.03em;
+      font-weight: 800;
+      color: #112230;
+      height: 100%;
+      width: 100%; }
+      .erip-payment__price-input input[name="manual-price"] {
+        border: 1px solid #e6e0eb;
+        background: #fff;
+        border-radius: 5px;
+        margin-right: 5px;
+        padding-top: 0;
+        text-align: center; }
   .erip-payment__price-note {
     font-family: "Arial", sans-serif;
     position: absolute;
@@ -7808,6 +7854,8 @@ div.wpcf7-response-output {
 
 .erip-payment__grid {
   margin-top: 25px; }
+  .erip-payment__grid_is-hidden {
+    display: none; }
 
 .erip-payment__promocode {
   margin-bottom: 40px;
@@ -7838,6 +7886,11 @@ div.wpcf7-response-output {
     width: 100%;
     font-size: 2.8rem;
     line-height: 1.25; }
+    .erip-payment__price-value svg {
+      left: -3px;
+      top: 0;
+      width: 21px;
+      height: 21px; }
   .erip-payment__price-note {
     display: block;
     position: relative;
@@ -7850,6 +7903,13 @@ div.wpcf7-response-output {
     margin-top: 15px; }
     .erip-payment__price-note::before {
       content: none; }
+  .erip-payment__price-input::after {
+    font-size: 2.8rem;
+    line-height: 1.25; }
+  .erip-payment__price-input input {
+    font-size: 2.8rem;
+    line-height: 1.25;
+    width: 53px; }
   .erip-payment__promocode {
     max-width: 100%;
     margin-bottom: 40px; } }

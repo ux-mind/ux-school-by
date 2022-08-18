@@ -11,7 +11,12 @@
         constructor(paymentMethodsContainer) {
             this._el = document.querySelector(paymentMethodsContainer);
             if (this._el) {
-                this.renderPaymentMethods(this._el, PAYMENT_METHODS_DATA);
+                if (this._el.dataset.target) {
+                    this.renderPaymentMethods(this._el, PAYMENT_METHODS_DATA_WITH_CARD);
+                }
+                else {
+                    this.renderPaymentMethods(this._el, PAYMENT_METHODS_DATA);
+                }
                 this._el.addEventListener(`click`, this.onPaymentMethodsClickHandler.bind(this));
             }
         }
@@ -28,7 +33,7 @@
                 paymentSections[this._paymentMethodIndex].classList.add('payment-section_state-active');
                 // ERIP
                 if (paymentMethodName === `erip`) {
-                    paymentModule.updateEripPrice();
+                    paymentModule.updateEripPrice({}, false, false, paymentMethodIndex);
                     jQuery('body, html').animate({
                         scrollTop: jQuery('#payment-anchor').offset().top
                     }, 800);

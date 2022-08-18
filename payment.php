@@ -50,7 +50,7 @@ $is_promocode = get_field('promocode_bool', 2);
 											<div data-type="payment" class="ums-select">
 												<button data-price="0" data-sale-price="0" type="button" class="ums-select__btn">Нажмите, чтобы выбрать курс</button>
 												<ul class="ums-select__list">
-													<li data-payment-level="2" data-price="0" data-sale-price="0" class="ums-select__list-item">Оплата следующего этапа действующего курса</li>
+													<li data-payment-level="2" data-price="0" data-sale-price="0" class="d-none ums-select__list-item">Произвольный платеж</li>
 													<?php
 														$counter = 0;
 														while ( $courses_query->have_posts() ): $courses_query->the_post();
@@ -131,49 +131,91 @@ $is_promocode = get_field('promocode_bool', 2);
 										</div>
 									</section>
 									<!-- END ERIP -->
-									<!-- BEGIN ONLINE PAYMENT -->
+									<!-- BEGIN ERIP -->
 									<section class="payment-form__section payment-section">
-										<div class="erip-payment payment-form__section-item">
-											<span class="payment-form__section-name">3. Оплатить картой</span>
-											<div class="erip-payment__wrapper">
-												<div class="erip-payment__price">Сумма для оплаты<span class="erip-payment__price-value">0 BYN</span></div>
-												<div class="erip-payment__grid">
-													<div class="promocode b-promocode erip-payment__promocode">
-														<label class="toggle-checkbox b-promocode__toggle-button">
-															<input type="checkbox" name="promocode-toggle" class="toggle-checkbox__input">
-															<div class="toggle-checkbox__element"></div>
-															<p class="toggle-checkbox__name">У меня есть промокод</p>
-														</label>
-														<div class="form__input promocode-input payment-form__input b-promocode__input">
-															<input data-payment="erip" type="text" class="b-promocode__input-field" inputmode="text" name="promocode">
-															<span class="form__label">Промокод</span>
-															<span role="alert" class="form__error-label">Промокод не найден</span>
-															<button type="button" class="btn promocode-input__btn b-promocode__button">Применить</button>
+										<form class="form erip-payment webpay-form payment-form__section-item">
+											<p class="payment-form__section-name">3. Введите ваши данные</p>
+											<div class="payment-form__section-grid">
+											<p class="payment-message erip-payment__message">Для оплаты картой свяжитесь, пожалуйста, с менеджером школы</p>
+												<div class="d-none webpay-form__item">
+													<div class="erip-payment__price">
+														Сумма для оплаты *<br>
+														<span class="erip-payment__price-value erip-payment__price-value_with-card">0</span>
+														<div class="erip-payment__price-input erip-payment__price-input_is-hidden">
+															<input type="text" value="0" name="manual-price">
 														</div>
 													</div>
-													<div class="payment-options payment-options_d-vertical erip-payment__options">
-														<label class="checkbox payment-options__item">
-															<input type="checkbox" name="installment-school" class="checkbox__input">
-															<p class="checkbox__name">Рассрочка на 3 месяца от UX Mind School</p>
-														</label>
-														<label class="checkbox payment-options__item">
-															<input type="checkbox" name="sale-school" class="checkbox__input">
-															<p class="checkbox__name">Скидка 10% выпускникам UX Mind School</p>
-														</label>
+													<input type="text" value="0" name="total" hidden>
+													<div class="erip-payment__grid">
+														<div class="promocode b-promocode erip-payment__promocode">
+															<label class="toggle-checkbox b-promocode__toggle-button">
+																<input type="checkbox" name="promocode-toggle"
+																	class="toggle-checkbox__input">
+																<div class="toggle-checkbox__element"></div>
+																<p class="toggle-checkbox__name">У меня есть промокод
+																</p>
+															</label>
+															<div
+																class="form__input promocode-input payment-form__input b-promocode__input">
+																<input data-payment="erip" type="text"
+																	class="b-promocode__input-field" inputmode="text"
+																	name="promocode">
+																<span class="form__label">Промокод</span>
+																<span role="alert" class="form__error-label">Промокод не
+																	найден</span>
+																<button type="button"
+																	class="btn promocode-input__btn b-promocode__button">Применить</button>
+															</div>
+														</div>
+														<div
+															class="payment-options payment-options_d-vertical erip-payment__options">
+															<label class="checkbox payment-options__item">
+																<input type="checkbox" name="installment-school"
+																	class="checkbox__input">
+																<p class="checkbox__name">Рассрочка на 3 месяца от UX
+																	Mind
+																	School</p>
+															</label>
+															<label class="checkbox payment-options__item">
+																<input type="checkbox" name="sale-school"
+																	class="checkbox__input">
+																<p class="checkbox__name">Скидка 10% выпускникам UX Mind
+																	School</p>
+															</label>
+														</div>
+													</div>
+													<p class="payment-message erip-payment__message"><span
+															class="erip-payment__message-note">*Скидки по акциям и
+															промокодам не суммируются.</span>После внесения платежа,
+														отправьте копию квитанции на <a
+															href="mailto:hello@ux-school.by">hello@ux-school.by</a></p>
+												</div>
+												<div class="d-none webpay-form__item">
+													<div class="form__input payment-form__input">
+														<input type="text" inputmode="text" required name="name">
+														<span class="form__label">Имя и фамилия ученика</span>
+														<span role="alert" class="form__error-label">Поле обязательно
+															для
+															заполнения</span>
 													</div>
 												</div>
-												<p class="payment-message erip-payment__message"><span class="erip-payment__message-note">*Скидки по акциям и промокодам не суммируются.</span>После внесения платежа, отправьте копию квитанции на <a href="mailto:hello@ux-school.by">hello@ux-school.by</a></p>
-												<script src='https://secure.tap2pay.me/checkout.v1.js'></script>
-												<script>
-													const t2pHandler = new T2P.Checkout({
-														merchant_id: "uAgssfy5"
-													});
-												</script>
-												<button style="margin-top: 20px;" class="tap2pay-pay-btn" type="button" onClick="t2pHandler.openProduct('WMSkLzcy')">Оплатить картой</button>
+												<div class="d-none">
+													<button type="button" data-payment-method="tap2pay"
+														class="btn webpay-form__btn webpay-form__btn-ajax">Перейти к
+														оплате</button>
+												</div>
+												<label class="d-none checkbox privacy-checkbox">
+													<input checked type="checkbox"
+														class="checkbox__input privacy-checkbox__input">
+													<p class="checkbox__name">Я согласен с условиями обработки
+														<button type="button" data-modal="#personal-data-modal"
+															class="link checkbox__link">персональных данных</button>
+													</p>
+												</label>
 											</div>
-										</div>
+										</form>
 									</section>
-									<!-- END ONLINE PAYMENT -->
+									<!-- END ERIP -->
 									<!-- BEGIN HALVA -->
 									<section class="payment-form__section payment-section">
 										<div class="form webpay-form payment-form__section-item">
@@ -299,6 +341,93 @@ $is_promocode = get_field('promocode_bool', 2);
 										</div>
 									</section>
 									<!-- END CHEREPAHA -->
+									<!-- BEGIN ERIP -->
+									<section class="payment-form__section payment-section">
+										<form class="form erip-payment webpay-form payment-form__section-item">
+											<p class="payment-form__section-name">3. Введите ваши данные</p>
+											<div class="payment-form__section-grid grid-second">
+												<div class="webpay-form__item">
+													<div class="d-none erip-payment__price">
+														Сумма для оплаты<br>
+														<span class="d-none erip-payment__price-value erip-payment__price-value_with-card">0
+															BYN
+														</span>
+														<div class="erip-payment__price-input">
+															<input type="text" value="0" name="manual-price">
+															BYN
+														</div>
+													</div>
+													<input type="text" value="0" name="total" hidden>
+													<div class="d-none erip-payment__grid">
+														<div class="d-none promocode b-promocode erip-payment__promocode">
+															<label class="toggle-checkbox b-promocode__toggle-button">
+																<input type="checkbox" name="promocode-toggle"
+																	class="toggle-checkbox__input">
+																<div class="toggle-checkbox__element"></div>
+																<p class="toggle-checkbox__name">У меня есть промокод
+																</p>
+															</label>
+															<div
+																class="form__input promocode-input payment-form__input b-promocode__input">
+																<input data-payment="erip" type="text"
+																	class="b-promocode__input-field" inputmode="text"
+																	name="promocode">
+																<span class="form__label">Промокод</span>
+																<span role="alert" class="form__error-label">Промокод не
+																	найден</span>
+																<button type="button"
+																	class="btn promocode-input__btn b-promocode__button">Применить</button>
+															</div>
+														</div>
+														<div
+															class="d-none payment-options payment-options_d-vertical erip-payment__options">
+															<label class="checkbox payment-options__item">
+																<input type="checkbox" name="installment-school"
+																	class="checkbox__input">
+																<p class="checkbox__name">Рассрочка на 3 месяца от UX
+																	Mind
+																	School</p>
+															</label>
+															<label class="checkbox payment-options__item">
+																<input type="checkbox" name="sale-school"
+																	class="checkbox__input">
+																<p class="checkbox__name">Скидка 10% выпускникам UX Mind
+																	School</p>
+															</label>
+														</div>
+													</div>
+													<p class="payment-message erip-payment__message"><span
+															class="erip-payment__message-note">*Скидки по акциям и
+															промокодам не суммируются.</span>После внесения платежа,
+														отправьте копию квитанции на <a
+															href="mailto:hello@ux-school.by">hello@ux-school.by</a></p>
+												</div>
+												<div class="d-none webpay-form__item">
+													<div class="form__input payment-form__input">
+														<input type="text" inputmode="text" required name="name">
+														<span class="form__label">Имя и фамилия ученика</span>
+														<span role="alert" class="form__error-label">Поле обязательно
+															для
+															заполнения</span>
+													</div>
+												</div>
+												<div>
+												<script src='https://secure.tap2pay.me/checkout.v1.js'></script>
+<script>var t2pHandler = new T2P.Checkout({merchant_id: "uAgssfy5"});</script>
+<button style="margin: 0;" class="tap2pay-pay-btn" type="button" onClick="t2pHandler.openProduct('1sDWEevs')">Сделать платеж</button>
+												</div>
+												<label class="d-none checkbox privacy-checkbox">
+													<input checked type="checkbox"
+														class="checkbox__input privacy-checkbox__input">
+													<p class="checkbox__name">Я согласен с условиями обработки
+														<button type="button" data-modal="#personal-data-modal"
+															class="link checkbox__link">персональных данных</button>
+													</p>
+												</label>
+											</div>
+										</form>
+									</section>
+									<!-- END ERIP -->
 								</div>
 							</div>
 						</div>

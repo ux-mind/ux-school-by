@@ -21,7 +21,7 @@
                 <!-- <button type="button" data-map-index="5" class="contact-page__info-item">ул. Раковская, д. 18 оф. 16<span class="link">Учебный класс</span></button> -->
                 <button type="button" data-map-index="1" class="contact-page__info-item">ул. Чапаева, д. 3, оф. 328<span class="link">Учебный класс</span></button>
                 <!-- <button type="button" data-map-index="4" class="contact-page__info-item">пр-т Независимости, д. 49, оф. 504<span class="link">Учебный класс</span></button> -->
-                <button type="button" data-map-index="2" class="contact-page__info-item">пр-т Независимости. д. 49, оф. 324<span class="link">Учебный класс</span></button>
+                <!-- <button type="button" data-map-index="2" class="contact-page__info-item">пр-т Независимости. д. 49, оф. 324<span class="link">Учебный класс</span></button> -->
                 <a href="tel:375298630657" class="contact-page__info-item contact-page__info-link">+375 (29) 863-06-57<span>Telegram, WhatsApp, Viber</span></a>
                 <a href="mailto:hello@ux-school.by" class="contact-page__info-item link contact-page__email-link">hello@ux-school.by</a>
                 <div class="social contact-page__social">

@@ -80,19 +80,23 @@ $is_promocode = get_field('promocode_bool', 2);
 										</div>
 									</div>
 								</section>
-								<section class="payment-form__section payment-section payment-section_state-active">
+								<section class="payment-form__section">
+									<p class="payment-form__section-name">2. Выберите способ оплаты</p>
+									<div data-target="card" class="payment-form__section-grid payment-form__section-options payment-methods"></div>
+								</section>
+								<div id="payment-anchor"></div>
+								<section class="payment-form__section payment-section">
 									<div class="form erip-payment webpay-form payment-form__section-item">
-										<p class="payment-form__section-name">2. Введите ваши данные</p>
+										<p class="payment-form__section-name">3. Введите ваши данные</p>
 										<div class="payment-form__section-grid grid-second">
 											<div class="webpay-form__item">
-												<div class="erip-payment__price">
-													Сумма для оплаты<br>
-													<span class="erip-payment__price-value erip-payment__price-value_with-card">0 BYN</span>
-													<div class="erip-payment__price-input erip-payment__price-input_is-hidden">
-														<input type="text" value="0" name="manual-price">
+											<div class="erip-payment__price">Сумма для оплаты<br>
+												<span class="erip-payment__price-value erip-payment__price-value_with-card">0 BYN</span>
+														<div class="d-none erip-payment__price-input">
+															<input type="text" value="0" name="manual-price"> BYN
+														</div>
 													</div>
-												</div>
-												<input type="text" value="0" name="total" hidden>
+													<input type="text" value="0" name="total" hidden>
 												<div class="erip-payment__grid">
 													<div class="promocode b-promocode erip-payment__promocode">
 														<label class="toggle-checkbox b-promocode__toggle-button">

@@ -49,19 +49,36 @@
                 utilsModule.removeClass(courseListElements, `ums-select__list-item_state-active`);
                 target.classList.add(`ums-select__list-item_state-active`);
 
-                if (paymentLevel === 2) {
+                if (paymentLevel && paymentLevel === 2) {
                     const paymentSections = document.querySelectorAll(`.payment-section`);
-                    paymentMethodModule.setPaymentMethodIndex(0);
                     utilsModule.removeClass(paymentSections, `payment-section_state-active`);
-                    paymentSections[0].classList.add(`payment-section_state-active`);
-                    paymentMethodModule.changePaymentMethod(0);
+                    if (paymentSections[6]) {
+                        paymentMethodModule.setPaymentMethodIndex(1);
+                        paymentSections[6].classList.add(`payment-section_state-active`);
+                        paymentMethodModule.changePaymentMethod(1);
+                    }
+                    else {
+                        paymentMethodModule.setPaymentMethodIndex(0);
+                        paymentSections[0].classList.add(`payment-section_state-active`);
+                        paymentMethodModule.changePaymentMethod(0);
+                        jQuery('.erip-payment__options').hide();
+                        jQuery('.erip-payment__price-value').addClass('d-none');
+                        jQuery('.erip-payment__price-input').removeClass('d-none');
+                    }
                     // Переписать JQuery
-                    jQuery(`.payment-item:not(:nth-child(1))`).hide();
+                    jQuery(`.payment-item`).hide();
+                    jQuery(`.payment-item:nth-child(1)`).show();
                     jQuery(`.webpay-form__sale-checkbox`).hide();
                     jQuery(`.toggle-checkbox`).hide();
+                    jQuery('body, html').animate({
+                        scrollTop: jQuery('#payment-anchor').offset().top
+                    }, 800);
                 } else {
                     // Переписать JQuery
-                    jQuery(`.payment-item:not(:nth-child(1)), .payment-item:not(:nth-child(2))`).show();
+                    jQuery('.erip-payment__options').show();
+                        jQuery('.erip-payment__price-value').removeClass('d-none');
+                        jQuery('.erip-payment__price-input').addClass('d-none');
+                    jQuery(`.payment-item`).show();
                     jQuery(`.webpay-form__sale-checkbox`).show();
                     jQuery(`.toggle-checkbox`).show();
                 }
@@ -76,12 +93,12 @@
                     paymentModule.setTotalPrice(this._courseData.fullPrice);
                 }
 
-                if (partialPayment === `no`) {
-                    jQuery(`.payment-item:nth-child(3)`).hide();
-                }
-                else {
-                    jQuery(`.payment-item:not(:nth-child(2))`).show();
-                }
+                // if (partialPayment === `no`) {
+                //     jQuery(`.payment-item:nth-child(3)`).hide();
+                // }
+                // else {
+                //     jQuery(`.payment-item:not(:nth-child(2))`).show();
+                // }
 
                 paymentButton.dataset.price = this._courseData.fullPrice;
                 paymentButton.dataset.salePrice = this._courseData.salePrice;

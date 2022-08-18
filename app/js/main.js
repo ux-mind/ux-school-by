@@ -611,6 +611,21 @@ function onTestBtnClickHandler() {
     ));
 }
 
+function onManualInputContainerInputHandler(evt) {
+	const target = evt.target;
+	const manualPriceElValue = target.value;
+	paymentInstance.setTotalPrice(+manualPriceElValue.value);
+}
+
+function onManualInputContainerKeyupHandler(evt) {
+	const target = evt.target;
+	const manualPriceElKeyValue = evt.key;
+	if (!manualPriceElKeyValue.match(/^\d+$/)) {
+		target.value = target.value.replace(/[^0-9]/g,'');
+	}
+	paymentInstance.setTotalPrice(+target.value);
+}
+
 // Подгружаем необходимые модули
 const amoCRMInsance = window.amoCRM.init;
 const paymentMethodInstance = window.paymentMethod.instance;
@@ -772,6 +787,7 @@ const sortNavigationButtons = document.querySelectorAll(`.sort-navigation__butto
 const sortListContainer = document.querySelector(`.sort-list`);
 const innerCarouselElements = document.querySelectorAll(`.inner-carousel__grid`);
 const selectCourseBox = document.querySelector(`.ums-select`);
+const manualInputContainer = document.querySelector(`input[name="manual-price"]`);
 
 document.addEventListener(`DOMContentLoaded`, () => {
     initInputListener();
@@ -785,6 +801,14 @@ document.addEventListener(`DOMContentLoaded`, () => {
     initSwiperInstance(`.course-gallery__grid`, courseGalleryCarouselOptions);
     initSwiperInstance(`.graduates__carousel`, graduatesCarouselOptions);
     initSwiperInstance(`.testimonials__carousel`, testimonialsCarouselOptions);
+
+    // MANUAL PRICE LISTENER
+	if (manualInputContainer) {
+		manualInputContainer.addEventListener(`input`, onManualInputContainerInputHandler);
+	}
+	if (manualInputContainer) {
+		manualInputContainer.addEventListener(`keyup`, onManualInputContainerKeyupHandler);
+	}
 
 		// Adds price per month
 		const elPricePerMonth = document.querySelector('.price-box__item-value .ums-currency__value');
@@ -952,13 +976,14 @@ document.addEventListener('click', (evt) => {
         const form = target.closest('.form');
         const method = target.dataset.paymentMethod;
         const inputs = form.querySelectorAll('input[required]');
-        const customer = (method === 'alfa') ? form.querySelector('input[name="name"]').value : form.querySelector('input[name="wsb_customer_name"]').value;
+        const customer = form.querySelector('input[name="name"]').value;
         let isValid;
         let ajaxData = {
             action: 'payment_' + method,
             totalPrice: paymentInstance.getTotalPrice() * 100,
             productName: paymentInstance.getCurrent(),
-            customerName: customer
+            customerName: customer,
+            currencySymbol: `BYN`
         }
 
         for (let input of inputs) {
@@ -1002,11 +1027,16 @@ document.addEventListener('click', (evt) => {
                     target.textContent = 'Обрабатываем данные...';
                 },
                 success: function (response) {
-                    console.log(response);
                     // Yandex conversion
                     ym(49171171, 'reachGoal', 'payment');
                     target.textContent = 'Перенаправляем на оплату...';
                     if (paymentMethodInstance.getPaymentMethodIndex() === 1) {
+                        setTimeout(function () {
+                            document.location.replace(response[`web_checkout_link`]);
+                        }, 200);
+                        return;
+                    }
+                    if (paymentMethodInstance.getPaymentMethodIndex() === 2) {
                         setTimeout(function () {
                             document.location.replace(response.checkout.redirect_url);
                         }, 200);
@@ -1030,24 +1060,25 @@ document.addEventListener('click', (evt) => {
         const eripPaymentPromocodeField = document.querySelector(`.promocode-input`);
         if (target.checked) {
             if (eripPaymentSaleField.checked) {
-                paymentInstance.updateEripPrice({}, true, true);
+                paymentInstance.updateEripPrice({}, true, true, paymentMethodInstance.getPaymentMethodIndex());
             }
             else if (eripPaymentPromocodeField.classList.contains(`promocode-input_state-success`)) {
-                paymentInstance.updateEripPrice(window.promocodeData.value, false, true);
+                console.log(window.promocodeData);
+                paymentInstance.updateEripPrice(window.promocodeData.value, false, true, paymentMethodInstance.getPaymentMethodIndex());
             }
             else {
-                paymentInstance.updateEripPrice({}, false, true);
+                paymentInstance.updateEripPrice({}, false, true, paymentMethodInstance.getPaymentMethodIndex());
             }
         }
         else {
             if (eripPaymentSaleField.checked) {
-                paymentInstance.updateEripPrice({}, true, false);
+                paymentInstance.updateEripPrice({}, true, false, paymentMethodInstance.getPaymentMethodIndex());
             }
             else if (eripPaymentPromocodeField.classList.contains(`promocode-input_state-success`)) {
-                paymentInstance.updateEripPrice(window.promocodeData.value, false, false);
+                paymentInstance.updateEripPrice(window.promocodeData.value, false, false, paymentMethodInstance.getPaymentMethodIndex());
             }
             else {
-                paymentInstance.updateEripPrice({}, false, false);
+                paymentInstance.updateEripPrice({}, false, false, paymentMethodInstance.getPaymentMethodIndex());
             }
         }
     }
@@ -1057,18 +1088,18 @@ document.addEventListener('click', (evt) => {
         document.querySelector(`.erip-payment__message-note`).classList.toggle(`erip-payment__message-note_active`);
         if (target.checked) {
             if (eripPaymentInstallmentField.checked) {
-                paymentInstance.updateEripPrice({}, true, true);
+                paymentInstance.updateEripPrice({}, true, true, paymentMethodInstance.getPaymentMethodIndex());
             }
             else {
-                paymentInstance.updateEripPrice({}, true, false)
+                paymentInstance.updateEripPrice({}, true, false, paymentMethodInstance.getPaymentMethodIndex())
             }
         }
         else {
             if (eripPaymentInstallmentField.checked) {
-                paymentInstance.updateEripPrice({}, false, true);
+                paymentInstance.updateEripPrice({}, false, true, paymentMethodInstance.getPaymentMethodIndex());
             }
             else {
-                paymentInstance.updateEripPrice({}, false, false);
+                paymentInstance.updateEripPrice({}, false, false, paymentMethodInstance.getPaymentMethodIndex());
             }
         }
     }

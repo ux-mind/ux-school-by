@@ -240,6 +240,9 @@ add_action('wp_ajax_nopriv_installment', 'installment_callback');
 add_action('wp_ajax_installment_debt', 'installment_debt_callback');
 add_action('wp_ajax_nopriv_installment_debt', 'installment_debt_callback');
 
+add_action('wp_ajax_payment_tap2pay', 'tap2pay_callback');
+add_action('wp_ajax_nopriv_payment_tap2pay', 'tap2pay_callback');
+
 add_action('wpcf7_init', 'wpcf7_add_form_tag_dates');
 /**
  * Custom template tags for this theme.
@@ -1544,4 +1547,45 @@ function get_course_schedule_layout( $term_id, $course_post_id, $template_id ) {
 		$options_html.='</option>';
 	endif;
 	return $options_html;
+}
+function tap2pay_callback() {
+	$curl = curl_init();
+
+	$product_name = trim($_POST['productName']);
+	$product_price = $_POST['totalPrice'];
+	$product_price_currency = $_POST['currencySymbol'];
+
+	$tap_2_pay_data = array(
+		"invoice" => array(
+			"description" => $product_name,
+			"items" => array(
+				array(
+					"name" => $product_name,
+					"price_value" => $product_price,
+					"price_currency" => $product_price_currency
+				)
+			)
+		)
+	);
+	
+	curl_setopt_array($curl, array(
+		CURLOPT_URL => 'https://secure.tap2pay.me/api/invoices',
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_ENCODING => '',
+		CURLOPT_MAXREDIRS => 10,
+		CURLOPT_TIMEOUT => 0,
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		CURLOPT_CUSTOMREQUEST => 'POST',
+		CURLOPT_POSTFIELDS => json_encode($tap_2_pay_data),
+		CURLOPT_HTTPHEADER => array(
+			'Content-Type: application/json',
+			'Accept: application/json',
+			'Authorization: Bearer eWspcxbeLyRRJRMDaAtMuMkUYrix4P4B'
+		)
+	));
+	$response = curl_exec($curl);
+	curl_close($curl);
+	echo $response;
+	wp_die();
 }
