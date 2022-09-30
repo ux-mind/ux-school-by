@@ -226,7 +226,7 @@ $is_promocode = get_field('promocode_bool', 2);
 												</div>
 												<div class="webpay-form__item">
 													<div class="form__input payment-form__input">
-														<input type="text" required name="wsb_customer_name">
+														<input type="text" required name="name">
 														<span class="form__label">Имя и фамилия ученика</span>
 														<span role="alert" class="form__error-label">Поле обязательно для заполнения</span>
 													</div>
