@@ -969,84 +969,133 @@ document.addEventListener('click', (evt) => {
     }
     if (target.matches('.webpay-form__btn')) {
         evt.preventDefault();
-
         const buttonText = target.textContent;
         target.textContent = 'Проверяем...';
-        target.style.opacity = .5;
+        target.style.opacity = 0.5;
         const form = target.closest('.form');
         const method = target.dataset.paymentMethod;
-        const inputs = form.querySelectorAll('input[required]');
-        const customer = form.querySelector('input[name="name"]').value;
+        let ajaxData;
         let isValid;
-        let ajaxData = {
+        const currentPrice = document.querySelector('.current-price');
+        const customerName = document.querySelector('#online-payment__name-input');
+        const productName = document.querySelector('#payment__product-name');
+        const installmentPriceValue = document.querySelector(
+          '.installment-price-value'
+        );
+        const installmentPriceBlock = document.querySelector('.installment-price');
+        const checkbox = document.querySelector('#payment-terms-checkbox');
+        const checkboxLayout = document.querySelector(
+          '#payment-terms-checkbox-elem'
+        );
+    
+        if (target.classList.contains('online-primary-btn')) {
+          let totalPrice = 0;
+          if (installmentPriceBlock.style.display === 'block') {
+            totalPrice =
+              Number(installmentPriceValue.innerHTML.replace(/ /g, '')) * 100;
+          } else {
+            totalPrice = Number(currentPrice.innerHTML.replace(/ /g, '')) * 100;
+          }
+          ajaxData = {
+            action: 'payment_alfa',
+            totalPrice: totalPrice,
+            productName: productName.value,
+            customerName: customerName.value,
+            currencySymbol: `BYN`,
+          };
+          isValid = true;
+          if (!customerName.value) {
+            isValid = false;
+            customerName.style.border = '1px solid red';
+            target.textContent = 'Перейти к оплате';
+            target.style.opacity = 1;
+          }
+          if (!checkbox.checked) {
+            isValid = false;
+            target.textContent = 'Перейти к оплате';
+            target.style.opacity = 1;
+          }
+        } else {
+          const inputs = form.querySelectorAll('input[required]');
+          const customer = form.querySelector('input[name="name"]').value;
+          ajaxData = {
             action: 'payment_' + method,
             totalPrice: paymentInstance.getTotalPrice() * 100,
             productName: paymentInstance.getCurrent(),
             customerName: customer,
-            currencySymbol: `BYN`
-        }
-
-        for (let input of inputs) {
+            currencySymbol: `BYN`,
+          };
+          for (let input of inputs) {
             const value = input.value;
             const label = input.nextElementSibling.nextElementSibling;
-
+    
             if (!value) {
-                input.classList.add('wpcf7-not-valid');
-                label.classList.add('form__error-label_active');
-                isValid = false;
-                setTimeout(() => {
-                    target.textContent = buttonText;
-                    target.style.opacity = 1;
-                }, 300);
-                return;
+              input.classList.add('wpcf7-not-valid');
+              label.classList.add('form__error-label_active');
+              isValid = false;
+              setTimeout(() => {
+                target.textContent = buttonText;
+                target.style.opacity = 1;
+              }, 300);
+              return;
             } else {
-                input.classList.remove('wpcf7-not-valid');
-                label.classList.remove('form__error-label_active');
-                isValid = true;
+              input.classList.remove('wpcf7-not-valid');
+              label.classList.remove('form__error-label_active');
+              isValid = true;
             }
+          }
         }
-
+    
         if (isValid) {
-            inputs.forEach(item => {
-                const label = item.nextElementSibling.nextElementSibling;
-
-                item.classList.remove('wpcf7-not-valid');
+          if (!target.classList.contains('online-primary-btn')) {
+            inputs.forEach((item) => {
+              const label = item.nextElementSibling
+                ? item.nextElementSibling.nextElementSibling
+                : null;
+    
+              item.classList.remove('wpcf7-not-valid');
+              if (label) {
                 label.classList.remove('form__error-label_active');
+              }
             });
             if (paymentMethodInstance.getPaymentMethodIndex() !== 3) {
-                ajaxData.customerSaleType = paymentInstance.getSaleType();
-                ajaxData.customerSaleValue = paymentInstance.getSaleValue();
+              ajaxData.customerSaleType = paymentInstance.getSaleType();
+              ajaxData.customerSaleValue = paymentInstance.getSaleValue();
             }
-            jQuery.ajax({
-                url: ajax.url,
-                type: 'POST',
-                dataType: 'json',
-                data: ajaxData,
-                beforeSend: function () {
-                    target.style.opacity = .5;
-                    target.textContent = 'Обрабатываем данные...';
-                },
-                success: function (response) {
-                    // Yandex conversion
-                    ym(49171171, 'reachGoal', 'payment');
-                    target.textContent = 'Перенаправляем на оплату...';
-                    if (paymentMethodInstance.getPaymentMethodIndex() === 1) {
-                        setTimeout(function () {
-                            document.location.replace(response[`web_checkout_link`]);
-                        }, 200);
-                        return;
-                    }
-                    if (paymentMethodInstance.getPaymentMethodIndex() === 2) {
-                        setTimeout(function () {
-                            document.location.replace(response.checkout.redirect_url);
-                        }, 200);
-                        return;
-                    }
-                    setTimeout(function () {
-                        document.location.replace(response.formUrl);
-                    }, 200);
-                }
-            });
+          } else {
+            ajaxData.customerSaleType = 'Нет скидки';
+            ajaxData.customerSaleValue = 0;
+          }
+          jQuery.ajax({
+            url: ajax.url,
+            type: 'POST',
+            dataType: 'json',
+            data: ajaxData,
+            beforeSend: function () {
+              target.style.opacity = 0.5;
+              target.textContent = 'Обрабатываем данные...';
+            },
+            success: function (response) {
+              // Yandex conversion
+              ym(49171171, 'reachGoal', 'payment');
+              target.textContent = 'Перенаправляем на оплату... test';
+              if (paymentMethodInstance.getPaymentMethodIndex() === 1) {
+                setTimeout(function () {
+                  document.location.replace(response[`web_checkout_link`]);
+                }, 200);
+                return;
+              }
+              if (paymentMethodInstance.getPaymentMethodIndex() === 2) {
+                setTimeout(function () {
+                  document.location.replace(response.checkout.redirect_url);
+                }, 200);
+                return;
+              }
+              setTimeout(function () {
+                document.location.replace(response.formUrl);
+              }, 200);
+            },
+          });
         }
     }
     if (selectCourseBox && selectCourseBox.querySelector(`.ums-select__btn`).classList.contains(`ums-select__btn_state-active`) && !target.closest(`.ums-select`)) {
@@ -1141,6 +1190,31 @@ document.body.addEventListener('mouseout', (evt) => {
         target.closest('svg').nextElementSibling.classList.remove('info__content_opened');
     }
 });
+
+// Payment online scripts
+(function handlePromocodeInput() {
+    const promocodeInput = document.querySelector('#online-promocode');
+    const promocodeInputWrapper = document.querySelector(
+      '.promocode-block__input-wrapper'
+    );
+  
+    if (promocodeInput && promocodeInputWrapper) {
+      promocodeInput.onchange = (e) => {
+        const promocodeInputValue = e.target.value;
+  
+        if (
+          !promocodeInputValue !== '' &&
+          !e.target.classList.contains('active')
+        ) {
+          promocodeInputWrapper.classList.add('active');
+        }
+  
+        if (promocodeInputValue === '') {
+          e.target.classList.remove('active');
+        }
+      };
+    }
+  })();
 
 // FANCY APP SETTINGS
 // jQuery('[data-fancybox][data-type="iframe"]').fancybox({

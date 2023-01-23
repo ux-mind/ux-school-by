@@ -847,6 +847,7 @@ function onPortfolioLoadMoreButtonClickHandler() {
 function onCoursesTabsButtonsClickHandler(evt) {
   const target = evt.target
   dataCurrentPageValue = 1
+  onlineShowed = false
   const coursesCategoryId = target.dataset.id.split(`,`)
   const coursesListGrid = target.parentElement.nextElementSibling
   const coursesListContainer = coursesListGrid.querySelector(
@@ -882,14 +883,20 @@ function onCoursesTabsButtonsClickHandler(evt) {
     .then(
       (resp) => {
         setTimeout(function () {
+		  
           coursesListGrid.classList.remove(`course-list__grid_state-is-loading`)
           coursesListContainer.innerHTML = ``
           coursesListContainer.insertAdjacentHTML(`afterBegin`, resp)
+			
+	      dataOnlineLoadOnly = +coursesListContainer.querySelector(
+		    `.course-list__row_first`,
+		  ).dataset.onlineLoadOnly
+		  console.log(dataOnlineLoadOnly)
           if (!isShowFull) {
             dataMaxPagesValue = +coursesListContainer.querySelector(
               `.course-list__row_first`,
             ).dataset.maxNumPages
-            if (dataCurrentPageValue === dataMaxPagesValue) {
+            if (dataCurrentPageValue === dataMaxPagesValue && dataOnlineLoadOnly != 1) {
               showMoreCoursesButton.classList.add(
                 `course-list__more-btn_disabled`,
               )
@@ -983,11 +990,16 @@ let emailInputValidation = false
 let textInputValidation = false
 let selectValidation = false
 let dataCurrentPageValue = 1
+let onlineShowed = false
 let dataMaxPagesValue
+let dataOnlineLoadOnly
 let currentPage = 1
 if (document.querySelector('.course-list__row_first')) {
   dataMaxPagesValue = +document.querySelector('.course-list__row_first').dataset
     .maxNumPages
+  dataOnlineLoadOnly = +document.querySelector('.course-list__row_first').dataset
+    .onlineLoadOnly
+  console.log(dataOnlineLoadOnly);
 }
 let deliveryElement = document.querySelector('select[name="delivery"]')
 let isCompleted = false
@@ -1186,6 +1198,7 @@ document.addEventListener('click', (evt) => {
       action: `courses`,
       id: id,
       current_page: dataCurrentPageValue,
+	  online_showed: onlineShowed,
     }
     const beforeSendHandler = function () {
       const el = target.parentElement.previousElementSibling
@@ -1202,8 +1215,14 @@ document.addEventListener('click', (evt) => {
           gridElement.classList.remove('course-list__wrapper_state-is-loading')
           target.classList.remove('ajax-btn_state-is-loading')
         }, 250)
-        dataCurrentPageValue += 1
-        if (dataCurrentPageValue === dataMaxPagesValue) {
+		//console.log(dataCurrentPageValue);
+		//console.log(dataMaxPagesValue);
+		if (dataCurrentPageValue === 1 && onlineShowed === false) {
+			onlineShowed = true;
+		} else {
+        	dataCurrentPageValue += 1
+		}
+        if (dataCurrentPageValue === dataMaxPagesValue || dataOnlineLoadOnly == 1) {
           document
             .querySelector('.course-list__footer')
             .classList.add('course-list__footer_state-disabled')
@@ -1298,4 +1317,9 @@ allCoursesBtn.addEventListener('click', () => {
 
 allCoursesClose.addEventListener('click', () => {
   allCoursesPopup.style.display = 'none'
+})
+document.querySelector('.top-message__button').addEventListener('click', () => {
+  document.querySelector('.top-message').style.display = 'none';
+  document.querySelector('.header').style.marginTop = 0;
+  document.querySelector('.m-menu').style.marginTop = 0;
 })
